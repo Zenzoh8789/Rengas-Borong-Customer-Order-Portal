@@ -1,0 +1,35 @@
+.category-slider {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 34px;
+  align-items: center;
+  gap: 6px;
+  margin: 18px 0 10px;
+}
+
+.category-arrow {
+  width: 34px;
+  height: 42px;
+  border: 0;
+  border-radius: 12px;
+  background: #fff;
+  color: #0758bd;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 5px 14px #56678318;
+  cursor: pointer;
+}
+
+.category-arrow svg { width: 19px; }
+
+.category-slider .chips {
+  display: flex;
+  gap: 12px;
+  margin: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+  padding: 2px;
+}
+
+.category-slider .chips::-webkit-scrollbar { display: none; }
+.category-slider .chips button { flex: 0 0 auto; scroll-snap-align: start; cursor: pointer; }

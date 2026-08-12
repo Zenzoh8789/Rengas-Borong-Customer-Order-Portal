@@ -1,0 +1,11 @@
+{
+  "name": "rengas-customer-portal",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": ["apps/web"],
+  "scripts": {
+    "dev": "npm run dev --workspace=@rengas/web",
+    "build": "npm run build --workspace=@rengas/web",
+    "preview": "npm run preview --workspace=@rengas/web"
+  }
+}
