@@ -7,17 +7,21 @@ import {
   type ReactNode,
 } from "react";
 import { api } from "../services/api";
-import type { CartLine, Product, Uom } from "../types";
+import type { CartItem, Product, ProductUom } from "../types";
 
 type Notice = { type: "success" | "error" | "info"; message: string };
 
 type AppState = {
   authenticated: boolean;
-  cart: CartLine[];
+  cart: CartItem[];
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
   notify: (message: string, type?: Notice["type"]) => void;
-  setQuantity: (product: Product, uom: Uom, quantity: number) => void;
+  setQuantity: (
+  product: Product,
+  uom: ProductUom,
+  quantity: number,
+) => void;
   clearCart: () => void;
 };
 
@@ -27,7 +31,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [authenticated, setAuthenticated] = useState(
     () => sessionStorage.getItem("rengas-auth") === "1",
   );
-  const [cart, setCart] = useState<CartLine[]>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [notice, setNotice] = useState<Notice | null>(null);
 
   const notify = (message: string, type: Notice["type"] = "info") => {
@@ -66,7 +70,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     notify("You have been logged out.", "info");
   };
 
-  const setQuantity = (product: Product, uom: Uom, quantity: number) => {
+  const setQuantity = ( product: Product, uom: ProductUom, quantity: number,) => {
     setCart((current) => {
       const rest = current.filter(
         (line) => !(line.product.id === product.id && line.uom.id === uom.id),
