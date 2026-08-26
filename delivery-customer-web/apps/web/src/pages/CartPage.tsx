@@ -3,7 +3,6 @@ import { SearchBox } from "../components/AppShell";
 import { BrandLogo } from "../components/BrandLogo";
 import { useApp } from "../context/AppContext";
 import { api } from "../services/api";
-import "../checkout.css";
 
 export function CartPage() {
   const [search, setSearch] = useState("");

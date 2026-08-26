@@ -25,3 +25,9 @@ The admin API must provide:
 - `/uploads/*` static product images
 
 Customer login sends the `CUSTOMER` role. The admin backend `Role` enum and MySQL `users.role` enum must therefore include `CUSTOMER`.
+
+## Customer sign-up and OTP
+
+The web app includes a customer registration flow with Full Name, Business/Shop Name, Phone Number, and Shop Location/Address. The saved business and address are displayed in the application header.
+
+The supplied backend does not currently expose sign-up or SMS OTP endpoints, so local development uses OTP `123456`. Before production, replace the development OTP methods in `AppContext.tsx` with backend calls that send and verify expiring, rate-limited OTP codes. Do not use the development OTP in production.

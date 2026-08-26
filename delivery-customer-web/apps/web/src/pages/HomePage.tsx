@@ -1,105 +1,17 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { ProductCard } from "../components/ProductCard";
 import { SearchBox } from "../components/AppShell";
 import { api } from "../services/api";
 import type { Product, ProductCategory } from "../types";
-
-const categoryName = (category: ProductCategory) =>
-  typeof category === "string" ? category : category?.name || "Uncategorised";
-
+const categoryName = (category: ProductCategory) => typeof category === "string" ? category : category?.name || "Uncategorised";
+const categoryEmoji = (name: string) => { const v=name.toLowerCase(); if(v==="all")return "🛍️"; if(/drink|beverage|water|juice/.test(v))return "🥤"; if(/snack|biscuit|sweet/.test(v))return "🍪"; if(/house|clean|laundry/.test(v))return "🧹"; if(/personal|beauty|care|health/.test(v))return "🧴"; if(/food|grocery|rice|noodle/.test(v))return "🍚"; return "📦"; };
 export function HomePage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("All");
-  const [searchParams, setSearchParams] = useSearchParams();
-  const categoryTrack = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    api
-      .products()
-      .then(setProducts)
-      .catch(() => setProducts([]));
-  }, []);
-
-  const categories = useMemo(
-    () => [
-      "All",
-      ...Array.from(
-        new Set(products.map((product) => categoryName(product.category))),
-      ).sort((a, b) => a.localeCompare(b)),
-    ],
-    [products],
-  );
-
-  useEffect(() => {
-    const requested = searchParams.get("category");
-    if (requested && categories.includes(requested)) setCategory(requested);
-  }, [categories, searchParams]);
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      const track = categoryTrack.current;
-      if (!track || track.scrollWidth <= track.clientWidth) return;
-      const atEnd =
-        track.scrollLeft + track.clientWidth >= track.scrollWidth - 8;
-      track.scrollTo({
-        left: atEnd
-          ? 0
-          : track.scrollLeft + Math.max(180, track.clientWidth * 0.7),
-        behavior: "smooth",
-      });
-    }, 3500);
-    return () => window.clearInterval(timer);
-  }, [categories.length]);
-
-  const filtered = useMemo(
-    () =>
-      products.filter(
-        (product) =>
-          (category === "All" || categoryName(product.category) === category) &&
-          `${product.name} ${product.code} ${product.uoms.map((uom) => uom.name)}`
-            .toLowerCase()
-            .includes(search.toLowerCase()),
-      ),
-    [products, search, category],
-  );
-
-  return (
-    <div className="home-page">
-      <div className="home-controls">
-        <SearchBox
-          value={search}
-          onChange={setSearch}
-          placeholder="Search name / code / UOM / price..."
-        />
-        <div className="category-slider category-slider-no-arrows">
-          <div className="chips" ref={categoryTrack}>
-            {categories.map((name) => (
-              <button
-                key={name}
-                className={category === name ? "active" : ""}
-                onClick={() => {
-                  setCategory(name);
-                  setSearchParams(name === "All" ? {} : { category: name });
-                }}
-              >
-                {name}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="section-title">
-          <h2>{category === "All" ? "All Products" : category}</h2>
-          <span>{filtered.length} items</span>
-        </div>
-      </div>
-      <div className="products-list">
-        {filtered.map((product) => (
-          <ProductCard product={product} key={product.id} />
-        ))}
-        {!filtered.length && <div className="empty">No products found.</div>}
-      </div>
-    </div>
-  );
+  const [products,setProducts]=useState<Product[]>([]); const [search,setSearch]=useState(""); const [params]=useSearchParams(); const navigate=useNavigate();
+  useEffect(()=>{api.products().then(setProducts).catch(()=>setProducts([]));},[]);
+  const categories=useMemo(()=>["All",...Array.from(new Set(products.map(p=>categoryName(p.category)))).sort()],[products]);
+  const requested=params.get("category")||"All"; const matching=products.filter(p=>(requested==="All"||categoryName(p.category)===requested)&&`${p.name} ${p.code} ${p.subtitle||""}`.toLowerCase().includes(search.toLowerCase()));
+  const sections=requested!=="All"||search?[[requested==="All"?"Search results":requested,matching] as const]:categories.slice(1).map(name=>[name,products.filter(p=>categoryName(p.category)===name).slice(0,3)] as const);
+  const open=(name:string)=>navigate(name==="All"?"/":`/?category=${encodeURIComponent(name)}`);
+  return <div className="home-page storefront-page"><div className="home-controls storefront-controls"><SearchBox value={search} onChange={setSearch} placeholder="Search products..."/><div className="category-tiles">{categories.map(name=><button key={name} className={requested===name?"active":""} onClick={()=>open(name)}><span>{categoryEmoji(name)}</span><b>{name.replace(/\s+products$/i,"")}</b></button>)}</div></div><div className="storefront-scroll">{sections.map(([name,items])=>items.length>0&&<section className="product-section" key={name}><header><div><h2>{name.replace(/\s+products$/i,"")}</h2><p>Popular picks for your shop</p></div><button onClick={()=>open(name)}>See more</button></header><div className="product-row">{items.map(product=><ProductCard key={product.id} product={product}/>)}</div></section>)}{!matching.length&&(search||requested!=="All")&&<div className="empty">No products found.</div>}</div></div>;
 }

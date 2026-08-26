@@ -2,7 +2,7 @@
   --outer-background: #eaf1fa;
   --page-background: #f6f9fd;
   --nav-height: 72px;
-  --nav-bottom: 12px;
+  --nav-bottom: 0px;
 }
 
 html,
@@ -27,7 +27,7 @@ body,
 
 .screen-content:has(.home-page),
 .screen-content:has(.categories-page) {
-  height: calc(100dvh - 74px);
+    height: calc(100dvh - 78px);
   padding: 0 22px;
   overflow: hidden;
   background: var(--page-background);
@@ -369,9 +369,9 @@ body,
   }
 
   .bottom-nav {
-    width: calc(100% - 24px);
+    width: 100%;
     height: var(--nav-height);
-    bottom: var(--nav-bottom);
+    bottom: 0;
     padding: 6px;
   }
 

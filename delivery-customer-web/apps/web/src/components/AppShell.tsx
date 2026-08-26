@@ -7,6 +7,9 @@ import {
   ShoppingCart,
   X,
   LogOut,
+  Bell,
+  UserRound,
+  MapPin,
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useState, type ReactNode } from "react";
@@ -18,6 +21,7 @@ const titles: Record<string, string> = {
   "/categories": "Categories",
   "/cart": "Your Cart",
   "/orders": "Order History",
+  "/account": "My Account",
 };
 export function SearchBox({
   value,
@@ -42,14 +46,22 @@ export function SearchBox({
 }
 export function AppShell({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { cart, logout } = useApp();
+  const { cart, logout, profile } = useApp();
   const { pathname } = useLocation();
+  const pageClass = pathname === "/"
+    ? "page-home"
+    : pathname === "/categories"
+      ? "page-categories"
+      : pathname.startsWith("/products/")
+        ? "page-product-detail"
+        : `page-${pathname.replace(/^\//, "") || "home"}`;
   const count = cart.reduce((n, x) => n + x.quantity, 0);
   const nav = [
     { to: "/", label: "Home", Icon: Home },
     { to: "/categories", label: "Category", Icon: Grid3X3 },
     { to: "/cart", label: "Cart", Icon: ShoppingCart },
     { to: "/orders", label: "Order", Icon: History },
+    { to: "/account", label: "Account", Icon: UserRound },
   ];
   return (
     <div className="phone-shell">
@@ -61,10 +73,10 @@ export function AppShell({ children }: { children: ReactNode }) {
         >
           <Menu />
         </button>
-        <h1>{titles[pathname] || "RENGAS BORONG"}</h1>
-        
+        <div className="topbar-title"><small><MapPin size={12} /> {profile?.businessName || "Current Location"}</small><h1>{profile?.address || titles[pathname] || "RENGAS BORONG"}</h1></div>
+        <button className="icon-btn notification-btn" aria-label="Notifications"><Bell /><b>2</b></button>
       </header>
-      <main className="screen-content">{children}</main>
+      <main className={`screen-content ${pageClass}`}>{children}</main>
       <nav className="bottom-nav" aria-label="Main navigation">
         {nav.map(({ to, label, Icon }) => (
           <NavLink key={to} to={to} end={to === "/"}>

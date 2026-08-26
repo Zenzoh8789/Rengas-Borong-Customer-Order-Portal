@@ -20,6 +20,8 @@ export interface Product {
   subtitle?: string;
   category: ProductCategory;
   imageUrl?: string | null;
+  description?: string | null;
+  rating?: number | null;
   uoms: ProductUom[];
 }
 
