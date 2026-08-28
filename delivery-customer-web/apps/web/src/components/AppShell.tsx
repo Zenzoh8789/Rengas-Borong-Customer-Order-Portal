@@ -1,3 +1,4 @@
+import { HeaderStatus } from "./HeaderStatus";
 import {
   Grid3X3,
   History,
@@ -7,22 +8,13 @@ import {
   ShoppingCart,
   X,
   LogOut,
-  Bell,
   UserRound,
-  MapPin,
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useState, type ReactNode } from "react";
 import { useApp } from "../context/AppContext";
 import { BrandLogo } from "./BrandLogo";
 
-const titles: Record<string, string> = {
-  "/": "RENGAS",
-  "/categories": "Categories",
-  "/cart": "Your Cart",
-  "/orders": "Order History",
-  "/account": "My Account",
-};
 export function SearchBox({
   value,
   onChange,
@@ -46,7 +38,7 @@ export function SearchBox({
 }
 export function AppShell({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { cart, logout, profile } = useApp();
+  const { cart, logout } = useApp();
   const { pathname } = useLocation();
   const pageClass = pathname === "/"
     ? "page-home"
@@ -73,8 +65,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         >
           <Menu />
         </button>
-        <div className="topbar-title"><small><MapPin size={12} /> {profile?.businessName || "Current Location"}</small><h1>{profile?.address || titles[pathname] || "RENGAS BORONG"}</h1></div>
-        <button className="icon-btn notification-btn" aria-label="Notifications"><Bell /><b>2</b></button>
+        <HeaderStatus />
       </header>
       <main className={`screen-content ${pageClass}`}>{children}</main>
       <nav className="bottom-nav" aria-label="Main navigation">
@@ -121,3 +112,5 @@ export function AppShell({ children }: { children: ReactNode }) {
     </div>
   );
 }
+
+

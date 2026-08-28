@@ -7,6 +7,7 @@ type AppState = {
   authenticated: boolean;
   profile: CustomerProfile | null;
   cart: CartItem[];
+  refreshProfile: () => Promise<void>;
   login: (username: string, password: string) => Promise<boolean>;
   loginCustomerWithPassword: (phoneNumber: string, password: string) => Promise<boolean>;
   signUp: (customer: CustomerRegistration) => Promise<boolean>;
@@ -39,9 +40,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     api.me()
       .then((result) => {
         if (!active) return;
-        setAuthenticated(result.authenticated);
-        setProfile(result.customer ?? null);
-        if (result.authenticated) sessionStorage.setItem("rengas-auth", "1");
+        const isCustomer = result.authenticated && result.role === "CUSTOMER" && !!result.customer;
+        setAuthenticated(isCustomer);
+        setProfile(isCustomer ? result.customer ?? null : null);
+        if (isCustomer) sessionStorage.setItem("rengas-auth", "1");
         else sessionStorage.removeItem("rengas-auth");
       })
       .catch(() => {
@@ -53,11 +55,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return () => { active = false; };
   }, []);
 
+  const refreshProfile = async () => {
+    const result = await api.me();
+    if (!result.authenticated || result.role !== "CUSTOMER" || !result.customer) {
+      setAuthenticated(false);
+      setProfile(null);
+      sessionStorage.removeItem("rengas-auth");
+      throw new Error("Please sign in with your registered customer phone number to load your shop details.");
+    }
+    setProfile(result.customer);
+  };
+
   const login = async (username: string, password: string) => {
     try {
       const result = await api.login(username.trim(), password);
       if (result.accessToken) localStorage.setItem("rengas-token", result.accessToken);
+      else localStorage.removeItem("rengas-token");
       if (!result.accessToken && !result.user) throw new Error("Invalid login response.");
+      await refreshProfile();
       sessionStorage.setItem("rengas-auth", "1");
       sessionStorage.setItem("rengas-show-welcome", "1");
       setAuthenticated(true);
@@ -141,7 +156,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const value = useMemo(() => ({
-    authenticated, profile, cart, login, loginCustomerWithPassword, signUp, sendOtp, verifyOtp, logout, notify, setQuantity,
+    authenticated, profile, cart, refreshProfile, login, loginCustomerWithPassword, signUp, sendOtp, verifyOtp, logout, notify, setQuantity,
     clearCart: () => setCart([]),
   }), [authenticated, cart, profile]);
 
@@ -164,3 +179,4 @@ export const useApp = () => {
   if (!value) throw new Error("AppProvider missing");
   return value;
 };
+

@@ -7,3 +7,26 @@
 /* Product details */
 .detail-back{display:flex;align-items:center;gap:8px;padding:0;border:0;color:var(--brand);background:transparent;font-weight:800}.detail-back svg{width:19px}.detail-image{height:290px;display:grid;place-items:center;margin:14px 0;border-radius:22px;background:#fff}.detail-image .brand-logo{width:100%;height:100%}.detail-info>small{color:var(--brand);font-size:11px;font-weight:800;text-transform:uppercase}.detail-info h1{margin:5px 0 8px;font-size:24px;line-height:1.2}.detail-rating{display:flex;align-items:center;gap:5px;color:#d5900a;font-size:12px;font-weight:800}.detail-rating svg{width:16px}.detail-price{margin-top:13px;color:var(--brand);font-size:23px;font-weight:800}.detail-price span{color:var(--muted);font-size:11px;font-weight:600}.detail-description{margin:20px 0;padding-top:18px;border-top:1px solid var(--line)}.detail-description h3{margin:0;font-size:14px}.detail-description p{margin:8px 0;color:var(--muted);font-size:12px;line-height:1.65}.detail-description button{padding:0;border:0;color:var(--brand);background:transparent;font-size:11px;font-weight:800}.detail-cart-bar{position:fixed;z-index:18;inset:auto 0 72px;display:grid;grid-template-columns:116px 1fr;gap:10px;padding:10px 14px;border-top:1px solid var(--line);background:rgb(255 255 255/96%)}.detail-stepper{grid-template-columns:36px 1fr 36px}.detail-add{min-height:44px;border:0;border-radius:12px;color:#fff;background:var(--brand);font-size:12px;font-weight:800}.more-products{margin-top:25px}
 
+
+/* Feedback is limited to product-detail navigation. */
+.detail-loading {
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.detail-loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--line);
+  border-top-color: var(--brand);
+  border-radius: 50%;
+  animation: detail-loading-spin 0.7s linear infinite;
+}
+@keyframes detail-loading-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .detail-loading-spinner { animation: none; }
+}

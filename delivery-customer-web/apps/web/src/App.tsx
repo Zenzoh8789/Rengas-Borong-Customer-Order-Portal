@@ -2,10 +2,12 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { AppShell } from "./components/AppShell";
-import { useApp } from "./context/AppContext";
 import { BrandLogo } from "./components/BrandLogo";
+import { useApp } from "./context/AppContext";
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
+
+const SPLASH_DURATION_MS = 1500;
 
 const HomePage = lazy(() =>
   import("./pages/HomePage").then((module) => ({
@@ -18,8 +20,11 @@ const CategoriesPage = lazy(() =>
     default: module.CategoriesPage,
   }))
 );
+
 const ProductDetailPage = lazy(() =>
-  import("./pages/ProductDetailPage").then((module) => ({ default: module.ProductDetailPage }))
+  import("./pages/ProductDetailPage").then((module) => ({
+    default: module.ProductDetailPage,
+  }))
 );
 
 const CartPage = lazy(() =>
@@ -40,18 +45,6 @@ const AccountPage = lazy(() =>
   }))
 );
 
-const loading = (
-  <main
-    className="route-loading"
-    role="status"
-    aria-label="Loading page"
-  >
-    <BrandLogo size={76} />
-    <span className="route-loading-spinner" />
-    <p>Loading Rengas Borong…</p>
-  </main>
-);
-
 function Protected() {
   const { authenticated } = useApp();
 
@@ -61,11 +54,16 @@ function Protected() {
 
   return (
     <AppShell>
-      <Suspense fallback={loading}>
+      <Suspense fallback={null}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/categories" element={<CategoriesPage />} />
-          <Route path="/products/:productId" element={<ProductDetailPage />} />
+
+          <Route
+            path="/products/:productId"
+            element={<ProductDetailPage />}
+          />
+
           <Route path="/cart" element={<CartPage />} />
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/account" element={<AccountPage />} />
@@ -82,9 +80,11 @@ export default function App() {
   useEffect(() => {
     const timer = window.setTimeout(() => {
       setInitialLoading(false);
-    }, 2000);
+    }, SPLASH_DURATION_MS);
 
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(timer);
+    };
   }, []);
 
   if (initialLoading) {
@@ -96,7 +96,7 @@ export default function App() {
         aria-label="Loading Rengas Borong"
       >
         <div className="logo-wrap">
-          <span className="logo-ring" />
+          <span className="logo-ring" aria-hidden="true" />
           <BrandLogo size={128} />
         </div>
 
@@ -104,8 +104,19 @@ export default function App() {
           Welcome to Rengas Borong
         </p>
 
-        <div className="welcome-progress">
-          <span />
+        <div
+          className="welcome-progress"
+          role="progressbar"
+          aria-label="Loading application"
+          aria-valuemin={0}
+          aria-valuemax={100}
+        >
+          <span
+            aria-hidden="true"
+            style={{
+              animationDuration: `${SPLASH_DURATION_MS}ms`,
+            }}
+          />
         </div>
       </main>
     );
