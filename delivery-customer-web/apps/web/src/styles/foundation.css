@@ -100,7 +100,7 @@ textarea:focus-visible {
   align-items: center;
   gap: 4px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: 13px;
   font-weight: 600;
 }
 .topbar-title small svg {
@@ -127,7 +127,7 @@ textarea:focus-visible {
   border-radius: 99px;
   color: #fff;
   background: var(--danger);
-  font-size: 9px;
+  font-size: 12px;
 }
 .notification-btn b {
   top: 3px;
@@ -158,7 +158,7 @@ textarea:focus-visible {
   gap: 3px;
   border-radius: 10px;
   color: #5f6673;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 600;
   text-decoration: none;
 }
@@ -215,7 +215,7 @@ textarea:focus-visible {
 }
 .drawer h2 {
   margin: 15px 0 3px;
-  font-size: 20px;
+  font-size: 14px;
 }
 .drawer p {
   margin: 0 0 22px;
@@ -314,7 +314,7 @@ textarea:focus-visible {
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--ink);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
 }
 .header-status-dialog {
@@ -339,7 +339,7 @@ textarea:focus-visible {
 }
 .header-status-dialog h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 14px;
 }
 .header-status-dialog p {
   font-size: 13px;
@@ -380,3 +380,9 @@ textarea:focus-visible {
   grid-column: 1 / -1;
   color: var(--muted);
 }
+
+/* Fixed three-size typography scale, including browser-default text elements. */
+:root { font-size: 13px; }
+h1, h2, h3, h4, h5, h6 { font-size: 14px; }
+small, sub, sup { font-size: 12px; }
+select { font: inherit; }

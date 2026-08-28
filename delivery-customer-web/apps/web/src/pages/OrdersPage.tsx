@@ -1,160 +1,153 @@
 import { RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SearchBox } from "../components/AppShell";
+import { BrandLogo } from "../components/BrandLogo";
 import { api } from "../services/api";
-import type { Order } from "../types";
+import type { Order, OrderLine } from "../types";
+
+// The order API must return items to display purchased products.
+interface DisplayOrder extends Order {
+  items?: OrderLine[];
+}
+const stages = ["Accepted", "Packed", "Shipped", "Delivered"];
 
 export function OrdersPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<DisplayOrder[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
   const loadOrders = useCallback(async () => {
     setLoading(true);
     setError("");
-
     try {
-      const result = await api.orders();
-      setOrders(result);
-    } catch (requestError) {
-      setOrders([]);
-      setError(
-        requestError instanceof Error
-          ? requestError.message
-          : "Unable to load orders.",
-      );
+      setOrders(await api.orders());
+    } catch {
+      setError("Unable to load orders. Please try again.");
     } finally {
       setLoading(false);
     }
   }, []);
-
   useEffect(() => {
     void loadOrders();
   }, [loadOrders]);
-
-  const filteredOrders = useMemo(() => {
-    const value = search.trim().toLowerCase();
-
-    if (!value) {
-      return orders;
-    }
-
+  const filtered = useMemo(() => {
+    const query = search.trim().toLowerCase();
     return orders.filter((order) =>
-      [
-        order.orderNo,
-        order.date,
-        order.status,
-        order.customer?.name,
-        order.customer?.companyName,
-        order.customer?.tinNumber,
-        order.customer?.phoneNumber,
-        order.customer?.whatsappNumber,
-        order.customer?.address,
-      ]
-        .filter(Boolean)
+      [order.orderNo, order.date, order.status]
         .join(" ")
         .toLowerCase()
-        .includes(value),
+        .includes(query),
     );
   }, [orders, search]);
 
   return (
-    <div className="orders-page">
+    <div className="orders-page orders-redesign">
       <div className="orders-controls">
         <SearchBox
           value={search}
           onChange={setSearch}
-          placeholder="Search order number / customer / status..."
+          placeholder="Search orders..."
         />
-
-        <div className="orders-heading">
-          <span>
-            <b>Orders</b>
-            <small>{filteredOrders.length} orders</small>
-          </span>
-
+        <header className="tracking-heading">
+          <h1>Orders ({filtered.length})</h1>
           <button
             type="button"
-            className="orders-refresh"
+            className="tracking-refresh"
             onClick={() => void loadOrders()}
             disabled={loading}
             aria-label="Refresh orders"
           >
-            <RefreshCw className={loading ? "spinning" : ""} size={18} />
+            <RefreshCw size={18} />
           </button>
-        </div>
+        </header>
       </div>
-
       <div className="orders-scroll">
-        {loading && <div className="empty">Loading orders...</div>}
-
-        {!loading && error && (
-          <div className="orders-error">
+        {loading ? (
+          <p role="status">Loading orders...</p>
+        ) : error ? (
+          <div role="alert">
             <p>{error}</p>
             <button type="button" onClick={() => void loadOrders()}>
               Try again
             </button>
           </div>
-        )}
-
-        {!loading && !error && !filteredOrders.length && (
-          <div className="empty">
-            {search ? "No matching orders found." : "No orders found."}
-          </div>
-        )}
-
-        {!loading &&
-          !error &&
-          filteredOrders.map((order) => (
-            <article className="order-card" key={order.id}>
-              <div className="order-main">
-                <span>
-                  <b>{order.orderNo}</b>
-                  <small>
-                    {order.date} • {order.itemCount} items
-                  </small>
-                </span>
-
-                <span className="order-summary">
-                  <b>RM {Number(order.total).toFixed(2)}</b>
-                  <em className={`status status-${order.status.toLowerCase()}`}>
-                    {order.status}
-                  </em>
-                </span>
-              </div>
-
-              {order.customer && (
-                <div className="order-customer">
-                  <b>{order.customer.name}</b>
-
-                  {order.customer.companyName && (
-                    <span>{order.customer.companyName}</span>
+        ) : !filtered.length ? (
+          <p>No orders found.</p>
+        ) : (
+          filtered.map((order) => {
+            const stage = stages.findIndex(
+              (label) =>
+                label.toLowerCase() ===
+                (order.status || "").trim().toLowerCase(),
+            );
+            const items = Array.isArray(order.items) ? order.items : [];
+            return (
+              <article className="tracking-card" key={order.id}>
+                <header className="tracking-card-header">
+                  <div>
+                    <h2>{order.orderNo}</h2>
+                    <p>
+                      {order.date} · {order.itemCount} items
+                    </p>
+                  </div>
+                  <strong>RM {Number(order.total).toFixed(2)}</strong>
+                </header>
+                {items.length ? (
+                  <ul
+                    className="tracking-products"
+                    aria-label={`Products in order ${order.orderNo}`}
+                  >
+                    {items.map((item) => (
+                      <li
+                        key={item.id}
+                        title={`${item.product.name} × ${item.quantity}`}
+                      >
+                        <BrandLogo
+                          size={68}
+                          src={item.product.imageUrl}
+                          alt={item.product.name}
+                        />
+                        <span
+                          className="tracking-quantity"
+                          aria-label={`Quantity ${item.quantity}`}
+                        >
+                          {item.quantity}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="tracking-unavailable">
+                    Product items are not available for this order.
+                  </p>
+                )}
+                <section
+                  className="tracking-section"
+                  aria-label={`Tracking for ${order.orderNo}`}
+                >
+                  <h3>Track</h3>
+                  <ol className="tracking-steps">
+                    {stages.map((label, index) => (
+                      <li
+                        key={label}
+                        className={index <= stage ? "reached" : ""}
+                        aria-current={index === stage ? "step" : undefined}
+                      >
+                        <span className="tracking-dot" aria-hidden="true" />
+                        <span>{label}</span>
+                      </li>
+                    ))}
+                  </ol>
+                  {stage < 0 && (
+                    <p className="tracking-unavailable">
+                      Delivery tracking is not available yet.
+                    </p>
                   )}
-
-                {order.customer.tinNumber && (
-                  <span>TIN: {order.customer.tinNumber}</span>
-                )}
-
-                {order.customer.phoneNumber && (
-                  <span>Phone: {order.customer.phoneNumber}</span>
-                )}
-
-                {order.customer.whatsappNumber && (
-                  <span>
-                    WhatsApp: {order.customer.whatsappNumber}
-                  </span>
-                )}
-
-                {order.customer.address && (
-                  <span className="customer-address">
-                    {order.customer.address}
-                  </span>
-                )}
-                </div>
-              )}
-            </article>
-          ))}
+                </section>
+              </article>
+            );
+          })
+        )}
       </div>
     </div>
   );

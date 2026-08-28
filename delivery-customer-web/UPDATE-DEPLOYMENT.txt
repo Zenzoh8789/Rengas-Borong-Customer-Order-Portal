@@ -1,0 +1,29 @@
+# Update and deployment
+
+Changes
+- All explicit CSS font sizes use 12px, 13px or 14px; default text is 13px.
+- Product images have light gray rounded tiles with a round orange + at bottom right.
+- Adding a product changes the button to a green cart icon. Further clicks add one more of the default unit. Removing the product from the cart restores the orange +.
+- Product image/name links remain keyboard accessible; the add button does not open the detail page.
+- Added apps/web/public/.htaccess for Apache/LiteSpeed refresh routing, plus _redirects for compatible static hosts. Docker already has an Nginx fallback.
+
+Build and deploy
+1. Extract delivery-customer-web-fixed.zip and open a terminal in delivery-customer-web.
+2. Run npm ci.
+3. Set your real production API URL in apps/web/.env.production:
+   VITE_API_URL=https://YOUR-BACKEND-HOST/api
+   Do not deploy a build using the default localhost API URL.
+4. Run npm run build.
+5. Upload ALL contents of apps/web/dist to the document root for order.rengatrading.in, including the hidden .htaccess file. This package assumes the app is hosted at the domain root.
+6. Apache/LiteSpeed must enable mod_rewrite and AllowOverride FileInfo for .htaccess. If this is Nginx, configure the site's frontend location with try_files $uri $uri/ /index.html; as shown in docker/nginx.conf, preserving any backend API proxy locations.
+7. Clear hosting/CDN cache. Open an actual product, reload its URL, and check /cart, /orders and /categories directly. Sign in if prompted.
+8. Check the orange + becomes green after adding and returns orange after removing all units from cart.
+
+Verification
+- TypeScript and Vite production build passed.
+- Component checks passed for initial +, green cart after adding, repeated addition, removal reset, alternative unit in cart and product without units.
+- All explicit CSS font-size declarations passed the 12/13/14px audit.
+- Verified .htaccess is copied into the production build.
+- Live website/server access and browser visual testing were unavailable. The live site has NOT been changed. Server refresh behavior must be confirmed after deployment.
+
+The ZIP includes updated source, lockfile, public assets and server configuration. Generated builds and node_modules are intentionally omitted; rebuild with your own production API settings.

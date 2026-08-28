@@ -1,0 +1,21 @@
+.account-page.account-redesign { width: 100%; background: #fff; border-radius: 12px; padding: 0 14px; color: #344054; font-size: 13px; }
+.account-redesign .account-simple-menu { display: flex; flex-direction: column; }
+.account-redesign .account-simple-menu button { width: 100%; min-height: 56px; display: grid; grid-template-columns: 22px minmax(0, 1fr) 18px; align-items: center; gap: 14px; border: 0; border-bottom: 1px solid #edf0f3; padding: 12px 2px; background: #fff; color: #344054; text-align: left; font: inherit; font-size: 13px; cursor: pointer; }
+.account-redesign .account-simple-menu svg { width: 19px; height: 19px; }
+.account-redesign .account-simple-menu button > svg:last-child { color: #98a2b3; width: 16px; height: 16px; }
+.account-redesign .account-simple-menu .account-signout { color: #ef4444; margin-top: 18px; border-bottom: 0; }
+.account-redesign .account-panel { padding: 14px 0; }
+.account-redesign .account-back { display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 0; border: 0; background: transparent; color: #344054; font-size: 13px; cursor: pointer; }
+.account-redesign .account-back svg { width: 18px; height: 18px; }
+.account-redesign h1 { margin: 12px 0 18px; font-size: 14px; }
+.account-redesign fieldset { display: grid; gap: 14px; border: 0; padding: 0; margin: 0; min-width: 0; }
+.account-redesign label { display: grid; gap: 6px; font-size: 12px; }
+.account-redesign input, .account-redesign textarea { box-sizing: border-box; width: 100%; min-width: 0; min-height: 44px; padding: 10px 12px; border: 1px solid #e3e6ee; border-radius: 8px; color: #344054; background: #fff; font-family: inherit; font-size: 14px; }
+.account-redesign textarea { resize: vertical; }
+.account-redesign .account-save { min-height: 46px; padding: 10px; border: 0; border-radius: 8px; background: #1111af; color: #fff; font-size: 14px; cursor: pointer; }
+.account-redesign .account-note, .account-redesign p { font-size: 12px; line-height: 1.6; }
+.account-redesign .account-note { color: #667085; }
+.account-redesign .account-phone { display: flex; align-items: center; gap: 10px; min-height: 44px; color: #1111af; font-size: 14px; }
+.account-redesign .account-phone svg { width: 18px; height: 18px; }
+.account-redesign button:disabled { opacity: .5; cursor: not-allowed; }
+.account-redesign :is(button, input, textarea, a):focus-visible { outline: 2px solid #1111af; outline-offset: 3px; }

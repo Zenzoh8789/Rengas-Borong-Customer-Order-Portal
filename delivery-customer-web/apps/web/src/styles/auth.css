@@ -74,7 +74,7 @@
 .signup-title-row h1 {
   margin: 0 0 5px;
   color: var(--ink);
-  font-size: 24px;
+  font-size: 14px;
   font-weight: 800;
   line-height: 1.25;
 }
@@ -103,7 +103,7 @@
 }
 
 .signup-title-row h1 {
-  font-size: 19px;
+  font-size: 14px;
   text-align: center;
 }
 
@@ -262,7 +262,7 @@
 
 .otp-input input {
   text-align: center;
-  font-size: 20px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.3em;
 }
@@ -354,7 +354,7 @@
   gap: 9px;
   margin-top: 13px;
   color: #586174;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.6;
 }
 
@@ -394,7 +394,7 @@
 .auth-switch {
   margin: 17px 0 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.6;
   text-align: center;
 }

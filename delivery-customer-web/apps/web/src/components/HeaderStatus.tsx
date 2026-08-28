@@ -75,7 +75,7 @@ export function HeaderStatus() {
     <>
       <div className="topbar-title header-location">
         <small>
-          <MapPin size={12} aria-hidden />
+          <MapPin size={16} aria-hidden />
           {businessName || "Current Location"}
         </small>
         <span className="header-address">

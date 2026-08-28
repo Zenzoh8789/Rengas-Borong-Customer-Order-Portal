@@ -42,7 +42,7 @@
 .auth-logo { display: grid; place-items: center; min-height: 108px; }
 .auth-logo img { display: block; max-width: 112px; max-height: 112px; object-fit: contain; }
 .auth-heading { width: 100%; margin: 24px 0; padding-bottom: 18px; border-bottom: 1px solid #edf0f5; }
-.auth-heading h1 { margin: 0 0 5px; font-size: 25px; line-height: 1.2; }
+.auth-heading h1 { margin: 0 0 5px; font-size: 14px; line-height: 1.2; }
 .auth-heading p, .signup-intro { margin: 0; color: var(--auth-muted); font-size: 13px; }
 .auth-field { color: #444c60; font-size: 12px; font-weight: 500; }
 
@@ -74,7 +74,7 @@
 .auth-input input::placeholder, .auth-input textarea::placeholder { color: #687185; }
 .auth-textarea { align-items: flex-start; min-height: 65px; padding-top: 15px; }
 .auth-textarea textarea { min-height: 46px; resize: vertical; }
-.otp-input input { text-align: center; font-size: 22px; font-weight: 700; letter-spacing: .35em; }
+.otp-input input { text-align: center; font-size: 14px; font-weight: 700; letter-spacing: .35em; }
 
 .auth-submit {
   width: 100%;
@@ -118,7 +118,7 @@
 .signup-screen::-webkit-scrollbar-track { background: #edf0f5; }
 .signup-screen::-webkit-scrollbar-thumb { border-radius: 999px; background: #aeb6c7; }
 .signup-title-row { display: grid; grid-template-columns: 28px 1fr 28px; align-items: center; margin-bottom: 12px; }
-.signup-title-row h1 { margin: 0; text-align: left; font-size: 20px; }
+.signup-title-row h1 { margin: 0; text-align: left; font-size: 14px; }
 .signup-back { display: grid; place-items: center; color: var(--auth-ink) !important; }
 .signup-intro { margin-bottom: 5px; }
 .auth-signup-card .auth-input { min-height: 46px; margin-top: 10px; }
@@ -127,7 +127,7 @@
 .auth-signup-card .auth-textarea textarea { min-height: 40px; }
 .password-toggle { flex: 0 0 auto; display: grid; place-items: center; border: 0; padding: 4px; color: #6d7588; background: none; cursor: pointer; }
 
-.terms-row { display: flex; align-items: flex-start; gap: 10px; margin-top: 14px; color: #485064; font-size: 11px; line-height: 1.65; }
+.terms-row { display: flex; align-items: flex-start; gap: 10px; margin-top: 14px; color: #485064; font-size: 12px; line-height: 1.65; }
 .terms-row input { flex: 0 0 16px; width: 16px; height: 16px; margin: 1px 0 0; accent-color: var(--auth-brand); }
 .auth-signup-card .auth-submit { min-height: 48px; margin-top: 14px; }
 .auth-signup-card .auth-switch { margin-top: 0; padding-top: 17px; }
@@ -156,6 +156,6 @@
   .auth-card { padding-inline: 16px; }
   .auth-input { padding-inline: 11px; }
   .auth-input > svg { margin-right: 10px; }
-  .auth-heading h1 { font-size: 23px; }
-  .terms-row { font-size: 10px; }
+  .auth-heading h1 { font-size: 14px; }
+  .terms-row { font-size: 12px; }
 }

@@ -1,0 +1,11 @@
+# Apache / LiteSpeed: keep client-side routes working on refresh.
+DirectoryIndex index.html
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Never turn API, uploaded images or missing assets into HTML.
+  RewriteRule ^(?:api|uploads|assets)(?:/|$) - [L]
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+  RewriteRule ^ index.html [L]
+</IfModule>
