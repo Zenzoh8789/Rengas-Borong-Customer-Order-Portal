@@ -1,28 +1,36 @@
 /* Replacement for the old cart CSS. Uses the updated CartPage.tsx classes. */
 .screen-content:has(.cart-page) {
-  height: auto;
-  min-height: calc(100dvh - 68px);
-  padding: 14px 12px calc(92px + env(safe-area-inset-bottom));
-  overflow: visible;
+  height: calc(100dvh - 68px);
+  min-height: 0;
+  padding: 14px 12px 0;
+  overflow: hidden;
   background: #fff;
 }
 
 .cart-page.cart-redesign {
   width: 100%;
-  height: auto;
+  height: 100%;
   min-height: 0;
   display: block;
-  overflow: visible;
+  padding-bottom: calc(92px + env(safe-area-inset-bottom));
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
 }
-
-/* Preserve the unrelated orders-page rule from your original file. */
-.screen-content:has(.orders-page) {
-  height: calc(100dvh - 74px);
-  min-height: 0;
-  padding-bottom: 0;
-  overflow: hidden;
+.cart-page.cart-redesign::-webkit-scrollbar {
+  display: none;
 }
+
+@media (max-width: 480px) {
+  .screen-content:has(.cart-page) {
+    height: calc(100dvh - 64px);
+    padding: 10px 12px 0;
+  }
+}
+
 .cart-redesign {
   background: #fff;
   border-radius: 12px;
@@ -109,11 +117,14 @@
 }
 .cart-redesign .cart-remove {
   position: absolute;
-  top: 4px;
+  top: 10px;
   right: 0;
   z-index: 2;
   width: 24px;
   height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid #fecaca;
   border-radius: 50%;
   background: #fff1f2;
@@ -245,22 +256,43 @@
 
 /* Use with the supplied OrdersPage.tsx. No customer details or VIEW control. */
 .screen-content:has(.orders-redesign) {
-  height: auto;
-  min-height: calc(100dvh - 68px);
-  overflow: visible;
-  padding-bottom: calc(92px + env(safe-area-inset-bottom));
+  height: calc(100dvh - 68px);
+  min-height: 0;
+  padding: 14px 14px 0;
+  overflow: hidden;
 }
 .orders-page.orders-redesign {
-  height: auto;
-  display: block;
-  overflow: visible;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   font-size: 13px;
 }
+.orders-redesign .orders-controls {
+  flex: 0 0 auto;
+}
 .orders-redesign .orders-scroll {
-  height: auto;
-  overflow: visible;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding-bottom: calc(92px + env(safe-area-inset-bottom));
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
   display: grid;
   gap: 14px;
+}
+.orders-redesign .orders-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .screen-content:has(.orders-redesign) {
+    height: calc(100dvh - 64px);
+    padding: 10px 12px 0;
+  }
 }
 .orders-redesign .tracking-heading {
   display: flex;

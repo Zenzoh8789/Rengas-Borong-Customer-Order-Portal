@@ -94,7 +94,7 @@ export function CartPage() {
       await api.createOrder(
         customer,
         cart.map((item) => ({
-          productId: item.uom.id,
+          productId: item.product.id,
           quantity: item.quantity,
         })),
       );
@@ -144,7 +144,7 @@ export function CartPage() {
                   aria-label={`Remove ${item.product.name}`}
                   onClick={() => setQuantity(item.product, item.uom, 0)}
                 >
-                  <X aria-hidden="true" />
+                  <X  size={24} strokeWidth={4}  aria-hidden="true" />
                 </button>
                 <BrandLogo
                   size={64}

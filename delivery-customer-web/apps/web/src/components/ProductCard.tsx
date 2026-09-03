@@ -7,13 +7,23 @@ import { BrandLogo } from "./BrandLogo";
 export function ProductCard({ product }: { product: Product }) {
   const { cart, setQuantity } = useApp();
   const uom = product.uoms[0];
+
   const quantity = uom
-    ? cart.find((x) => x.product.id === product.id && x.uom.id === uom.id)
-        ?.quantity || 0
+    ? cart.find(
+        (item) =>
+          item.product.id === product.id &&
+          item.uom.id === uom.id,
+      )?.quantity || 0
     : 0;
-  const inCart = cart.some(
-    (line) => line.product.id === product.id && line.quantity > 0,
-  );
+
+  const inCart = quantity > 0;
+
+  const toggleCart = () => {
+    if (!uom) return;
+
+    setQuantity(product, uom, inCart ? 0 : 1);
+  };
+
   return (
     <article className="store-product-card">
       <div className="store-product-image">
@@ -22,18 +32,26 @@ export function ProductCard({ product }: { product: Product }) {
           to={`/products/${product.id}`}
           aria-label={`View ${product.name}`}
         >
-          <BrandLogo size={116} src={product.imageUrl} alt={product.name} />
+          <BrandLogo
+            size={116}
+            src={product.imageUrl}
+            alt={product.name}
+          />
         </Link>
+
         {uom && (
           <button
             type="button"
-            className={`store-product-add${inCart ? " is-in-cart" : ""}`}
+            className={`store-product-add${
+              inCart ? " is-in-cart" : ""
+            }`}
             aria-label={
               inCart
-                ? `Add another ${product.name} (in cart)`
+                ? `Remove ${product.name} from cart`
                 : `Add ${product.name} to cart`
             }
-            onClick={() => setQuantity(product, uom, quantity + 1)}
+            aria-pressed={inCart}
+            onClick={toggleCart}
           >
             {inCart ? (
               <ShoppingCart aria-hidden="true" />
@@ -43,18 +61,26 @@ export function ProductCard({ product }: { product: Product }) {
           </button>
         )}
       </div>
+
       <h3>
-        <Link to={`/products/${product.id}`}>{product.name}</Link>
+        <Link to={`/products/${product.id}`}>
+          {product.name}
+        </Link>
       </h3>
+
       {product.description && (
         <small className="store-product-description">
           {product.description}
         </small>
       )}
+
       <div className="store-product-price">
         <span>
           <b>RM {Number(uom?.price || 0).toFixed(2)}</b>
-          <small> / {uom?.name || uom?.pack || "unit"}</small>
+          <small>
+            {" "}
+            / {uom?.name || uom?.pack || "unit"}
+          </small>
         </span>
       </div>
     </article>

@@ -1,5 +1,5 @@
 import { Bell, MapPin, X } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import { api } from "../services/api";
@@ -12,6 +12,12 @@ const titles: Record<string, string> = {
   "/orders": "Order History",
   "/account": "My Account",
 };
+const NOTIFICATION_SEEN_KEY = "rengas-orders-seen";
+const orderSignature = (items: Order[]) =>
+  [...items]
+    .sort((a, b) => Number(b.id) - Number(a.id))
+    .map((order) => `${order.id}:${order.status}`)
+    .join("|");
 
 export function HeaderStatus() {
   const { profile } = useApp();
@@ -22,26 +28,34 @@ export function HeaderStatus() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [orders, setOrders] = useState<Order[]>([]);
+  const [hasUnread, setHasUnread] = useState(false);
 
   const businessName = profile?.businessName?.trim();
   const address = profile?.address?.trim();
 
-  const load = async () => {
+  const load = async (showLoading = true, markSeen = false) => {
     const id = ++requestId.current;
-    setBusy(true);
+    if (showLoading) setBusy(true);
     setError("");
 
     try {
       const items = await api.orders();
       if (id === requestId.current) {
-        setOrders(
-          [...items]
+        const recent = [...items]
             .sort(
               (a, b) =>
                 (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0),
             )
-            .slice(0, 10),
-        );
+            .slice(0, 10);
+        setOrders(recent);
+        const signature = orderSignature(recent);
+        const seen = localStorage.getItem(NOTIFICATION_SEEN_KEY);
+        if (markSeen || seen === null) {
+          localStorage.setItem(NOTIFICATION_SEEN_KEY, signature);
+          setHasUnread(false);
+        } else {
+          setHasUnread(signature !== seen);
+        }
       }
     } catch (cause) {
       if (id === requestId.current) {
@@ -52,17 +66,23 @@ export function HeaderStatus() {
         );
       }
     } finally {
-      if (id === requestId.current) {
+      if (showLoading && id === requestId.current) {
         setBusy(false);
       }
     }
   };
 
+  useEffect(() => {
+    void load(false);
+    const timer = window.setInterval(() => void load(false), 30_000);
+    return () => window.clearInterval(timer);
+  }, []);
+
   const open = () => {
     setOrders([]);
     setError("");
     dialog.current?.showModal();
-    void load();
+    void load(true, true);
   };
 
   const close = () => {
@@ -91,6 +111,7 @@ export function HeaderStatus() {
         onClick={open}
       >
         <Bell />
+        {hasUnread && <b aria-label="New notification" />}
       </button>
 
       <dialog
@@ -160,7 +181,7 @@ export function HeaderStatus() {
           type="button"
           className="header-status-action"
           disabled={busy}
-          onClick={() => void load()}
+          onClick={() => void load(true, true)}
         >
           {error ? "Try again" : "Refresh"}
         </button>

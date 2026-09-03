@@ -8,6 +8,7 @@ type AppState = {
   profile: CustomerProfile | null;
   cart: CartItem[];
   refreshProfile: () => Promise<void>;
+  updateProfile: (details: Omit<CustomerProfile, "id">) => Promise<void>;
   login: (username: string, password: string) => Promise<boolean>;
   loginCustomerWithPassword: (phoneNumber: string, password: string) => Promise<boolean>;
   signUp: (customer: CustomerRegistration) => Promise<boolean>;
@@ -24,7 +25,14 @@ const errorMessage = (error: unknown, fallback: string) => error instanceof Erro
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [authenticated, setAuthenticated] = useState(() => sessionStorage.getItem("rengas-auth") === "1");
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    try {
+      const saved = localStorage.getItem("rengas-cart");
+      return saved ? JSON.parse(saved) as CartItem[] : [];
+    } catch {
+      return [];
+    }
+  });
   const [profile, setProfile] = useState<CustomerProfile | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
   const notify = (message: string, type: Notice["type"] = "info") => setNotice({ message, type });
@@ -34,6 +42,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const timer = window.setTimeout(() => setNotice(null), 3500);
     return () => window.clearTimeout(timer);
   }, [notice]);
+
+  useEffect(() => {
+    localStorage.setItem("rengas-cart", JSON.stringify(cart));
+  }, [cart]);
 
   useEffect(() => {
     let active = true;
@@ -64,6 +76,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       throw new Error("Please sign in with your registered customer phone number to load your shop details.");
     }
     setProfile(result.customer);
+  };
+
+  const updateProfile = async (details: Omit<CustomerProfile, "id">) => {
+    const updated = await api.updateCustomerProfile(details);
+    setProfile(updated.customer);
+    notify("Profile saved successfully.", "success");
   };
 
   const login = async (username: string, password: string) => {
@@ -145,6 +163,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setAuthenticated(false);
     setProfile(null);
     setCart([]);
+    localStorage.removeItem("rengas-cart");
     notify("You have been logged out.", "info");
   };
 
@@ -165,7 +184,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const value = useMemo(() => ({
-    authenticated, profile, cart, refreshProfile, login, loginCustomerWithPassword, signUp, sendOtp, verifyOtp, logout, notify, setQuantity,
+    authenticated, profile, cart, refreshProfile, updateProfile, login, loginCustomerWithPassword, signUp, sendOtp, verifyOtp, logout, notify, setQuantity,
     clearCart: () => setCart([]),
   }), [authenticated, cart, profile]);
 

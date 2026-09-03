@@ -38,7 +38,7 @@ export function SearchBox({
 }
 export function AppShell({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { cart, logout } = useApp();
+  const { cart, logout, profile } = useApp();
   const { pathname } = useLocation();
   const pageClass = pathname === "/"
     ? "page-home"
@@ -95,8 +95,8 @@ export function AppShell({ children }: { children: ReactNode }) {
               <X />
             </button>
             <BrandLogo />
-            <h2>RENGAS Customer</h2>
-            <p>Wholesale Buyer Account</p>
+            <h2>RENGAS BORONG</h2>
+            <p>{profile?.fullName?.trim() || "Customer"}</p>
             {nav.map(({ to, label, Icon }) => (
               <NavLink key={to} to={to} onClick={() => setMenuOpen(false)}>
                 <Icon />

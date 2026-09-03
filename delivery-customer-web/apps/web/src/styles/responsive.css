@@ -1,7 +1,9 @@
 /* Mobile-first: keep the same components, typography and stacked layout everywhere.
    Wider screens only center the existing UI; no desktop redesign. */
 @media (min-width: 700px) {
-  .phone-shell { --frame-width: min(540px, calc(100% - 48px)); }
+  .phone-shell {
+    --frame-width: min(540px, calc(100% - 48px));
+  }
 
   .topbar,
   .screen-content {
@@ -30,11 +32,17 @@
 }
 
 /* Reserve room for both fixed bars on product details, including phone safe areas. */
-.detail-cart-bar { bottom: calc(72px + env(safe-area-inset-bottom)); }
-.page-product-detail { padding-bottom: calc(164px + env(safe-area-inset-bottom)); }
+.detail-cart-bar {
+  bottom: calc(72px + env(safe-area-inset-bottom));
+}
+.page-product-detail {
+  padding-bottom: calc(164px + env(safe-area-inset-bottom));
+}
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
   }

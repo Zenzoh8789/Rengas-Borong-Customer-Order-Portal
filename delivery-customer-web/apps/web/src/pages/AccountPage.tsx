@@ -8,10 +8,6 @@ const SUPPORT_PHONE = "";
 const SUPPORT_HOURS = "";
 const SUPPORT_TEL = SUPPORT_PHONE.replace(/[^+\d]/g, "");
 type ProfileDetails = Omit<CustomerProfile, "id">;
-type AccountPageProps = {
-  // Connect to your authenticated backend update method when available.
-  onSaveProfile?: (details: ProfileDetails) => Promise<void>;
-};
 const fields: { key: keyof ProfileDetails; label: string; type?: string; required?: boolean }[] = [
   { key: "fullName", label: "Full name", required: true },
   { key: "businessName", label: "Company / shop name", required: true },
@@ -22,8 +18,8 @@ const fields: { key: keyof ProfileDetails; label: string; type?: string; require
   { key: "address", label: "Delivery address", required: true },
 ];
 
-export function AccountPage({ onSaveProfile }: AccountPageProps = {}) {
-  const { logout, profile, refreshProfile } = useApp();
+export function AccountPage() {
+  const { logout, profile, updateProfile } = useApp();
   const [panel, setPanel] = useState<"menu" | "profile" | "help">("menu");
   const [draft, setDraft] = useState<ProfileDetails | null>(null);
   const [saving, setSaving] = useState(false);
@@ -40,15 +36,14 @@ export function AccountPage({ onSaveProfile }: AccountPageProps = {}) {
   };
   const save = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!draft || !onSaveProfile || saving) return;
+    if (!draft || saving) return;
     setSaving(true);
     setMessage("");
     try {
-      await onSaveProfile(draft);
-      await refreshProfile();
+      await updateProfile(draft);
       setMessage("Profile saved successfully.");
-    } catch {
-      setMessage("Unable to confirm the profile update. Please reload your profile before trying again.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to save your profile. Please try again.");
     } finally { setSaving(false); }
   };
 
@@ -67,8 +62,7 @@ export function AccountPage({ onSaveProfile }: AccountPageProps = {}) {
             {field.key === "address" ? <textarea required rows={3} value={draft.address} onChange={e => setDraft({ ...draft, address: e.target.value })} /> :
               <input type={field.type || "text"} required={field.required} value={draft[field.key]} onChange={e => setDraft({ ...draft, [field.key]: e.target.value })} />}
           </label>)}
-          {!onSaveProfile && <p className="account-note">Editing preview only. Saving must be connected to your profile-update API; these changes are not saved.</p>}
-          <button type="submit" className="account-save" disabled={!onSaveProfile || saving}>{saving ? "Saving..." : "Save changes"}</button>
+          <button type="submit" className="account-save" disabled={saving}>{saving ? "Saving..." : "Save changes"}</button>
         </fieldset>
         {message && <p role="status">{message}</p>}
       </form> : <p>Your profile is unavailable. Please sign in again.</p> : <div className="account-help">
@@ -79,5 +73,4 @@ export function AccountPage({ onSaveProfile }: AccountPageProps = {}) {
     </section>}
   </div>;
 }
-
 

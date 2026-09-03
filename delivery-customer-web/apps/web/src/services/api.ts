@@ -83,6 +83,11 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ phoneNumber, otp }),
     }),
+  updateCustomerProfile: (customer: Omit<CustomerProfile, "id">) =>
+    request<{ customer: CustomerProfile }>("/auth/customer/profile", {
+      method: "PATCH",
+      body: JSON.stringify(customer),
+    }),
   products: () => {
     if (!productsRequest) {
       productsRequest = request<Product[]>("/store/products").catch((error) => {

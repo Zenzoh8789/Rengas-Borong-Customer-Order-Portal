@@ -133,6 +133,13 @@ textarea:focus-visible {
   top: 3px;
   right: 2px;
 }
+.notification-btn b:empty {
+  min-width: 10px;
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border-width: 2px;
+}
 .screen-content {
   min-height: calc(100dvh - 68px);
   padding: 14px 14px 104px;

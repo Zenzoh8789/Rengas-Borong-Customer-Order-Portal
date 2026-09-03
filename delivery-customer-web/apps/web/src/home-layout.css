@@ -27,8 +27,9 @@ body,
 
 .screen-content:has(.home-page),
 .screen-content:has(.categories-page) {
-    height: calc(100dvh - 78px);
-  padding: 0 22px;
+  height: calc(100dvh - 68px);
+  min-height: 0;
+  padding: 0 18px;
   overflow: hidden;
   background: var(--page-background);
 }
@@ -49,6 +50,48 @@ body,
   z-index: 20;
   flex: 0 0 auto;
   background: var(--page-background);
+}
+
+.storefront-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 12px 0 calc(var(--nav-height) + env(safe-area-inset-bottom) + 24px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.storefront-scroll::-webkit-scrollbar { display: none; }
+
+/* Product details scrolls inside the app shell while both bottom bars stay fixed. */
+.screen-content.page-product-detail {
+  height: calc(100dvh - 68px);
+  min-height: 0;
+  padding-bottom: calc(164px + env(safe-area-inset-bottom));
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.screen-content.page-product-detail::-webkit-scrollbar {
+  display: none;
+}
+
+/* Account forms can extend beyond the viewport; keep the bottom navigation fixed. */
+.screen-content.page-account {
+  height: calc(100dvh - 68px);
+  min-height: 0;
+  padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + 24px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.screen-content.page-account::-webkit-scrollbar {
+  display: none;
 }
 
 .home-controls {
@@ -212,7 +255,18 @@ body,
   .screen-content:has(.home-page),
   .screen-content:has(.categories-page) {
     height: calc(100dvh - 64px);
+    min-height: 0;
     padding: 0 12px;
+  }
+
+  .screen-content.page-product-detail {
+    height: calc(100dvh - 64px);
+    padding-bottom: calc(164px + env(safe-area-inset-bottom));
+  }
+
+  .screen-content.page-account {
+    height: calc(100dvh - 64px);
+    padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + 24px);
   }
 
   .home-controls {
