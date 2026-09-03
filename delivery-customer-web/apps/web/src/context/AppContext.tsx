@@ -150,8 +150,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const setQuantity = (product: Product, uom: ProductUom, quantity: number) => {
     setCart((current) => {
-      const rest = current.filter((line) => !(line.product.id === product.id && line.uom.id === uom.id));
-      return quantity > 0 ? [...rest, { product, uom, quantity }] : rest;
+      const matches = (line: CartItem) =>
+        line.product.id === product.id && line.uom.id === uom.id;
+
+      if (quantity <= 0) return current.filter((line) => !matches(line));
+
+      const existingIndex = current.findIndex(matches);
+      if (existingIndex < 0) return [...current, { product, uom, quantity }];
+
+      return current.map((line, index) =>
+        index === existingIndex ? { ...line, quantity } : line,
+      );
     });
   };
 

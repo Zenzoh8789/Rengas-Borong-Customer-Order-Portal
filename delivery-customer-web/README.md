@@ -4,7 +4,7 @@ Mobile-first React customer ordering portal. Product, category, image, UOM, pric
 
 ## Local development
 
-1. Start the admin backend at `http://localhost:3002`.
+1. Start the admin backend at `http://localhost:3000`.
 2. Copy `.env.example` to `.env` if the API URL is different.
 3. Run `npm install`.
 4. Run `npm run dev`.

@@ -31,7 +31,7 @@ export interface CartItem {
   quantity: number;
 }
 
-export type OrderStatus = "VIEW" | "MODIFIED" | "PRINTED";
+export type OrderStatus = "ACCEPTED" | "PACKED" | "SHIPPED" | "DELIVERED";
 
 export interface OrderCustomer {
   id?: number;

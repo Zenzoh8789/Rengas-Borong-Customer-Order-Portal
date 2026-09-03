@@ -1,6 +1,6 @@
 import type { Order, Product } from "../types";
 
-const BASE = (import.meta.env.VITE_API_URL || "http://localhost:3002/api").replace(/\/$/, "");
+const BASE = (import.meta.env.VITE_API_URL || "http://localhost:3000/api").replace(/\/$/, "");
 const API_ORIGIN = new URL(BASE, window.location.origin).origin;
 
 export type CustomerProfile = {

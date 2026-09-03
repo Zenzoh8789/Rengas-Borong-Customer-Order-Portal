@@ -1,0 +1,123 @@
+/* Lightweight storefront motion: transform/opacity only for smooth rendering. */
+html {
+  scroll-behavior: smooth;
+}
+
+.screen-content,
+.storefront-scroll,
+.orders-scroll,
+.category-tiles {
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.store-product-card,
+.category-card,
+.cart-line,
+.tracking-card {
+  animation: content-rise-in 380ms cubic-bezier(0.22, 0.8, 0.3, 1) both;
+  backface-visibility: hidden;
+}
+
+.product-row .store-product-card:nth-child(2),
+.categories-list .category-card:nth-child(2) {
+  animation-delay: 45ms;
+}
+
+.product-row .store-product-card:nth-child(3),
+.categories-list .category-card:nth-child(3) {
+  animation-delay: 90ms;
+}
+
+.store-product-card,
+.category-card {
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.store-product-image .brand-logo,
+.detail-image .brand-logo {
+  transition: transform 260ms cubic-bezier(0.22, 0.8, 0.3, 1);
+}
+
+.store-product-add,
+.cart-quantity button,
+.checkout {
+  transition:
+    transform 140ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+  touch-action: manipulation;
+}
+
+.store-product-add:active,
+.cart-quantity button:active,
+.checkout:active {
+  transform: scale(0.9);
+}
+
+.store-product-add.is-in-cart {
+  animation: cart-added-pop 320ms cubic-bezier(0.2, 1.35, 0.4, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .store-product-card:hover,
+  .category-card:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--brand) 28%, var(--line));
+    box-shadow: 0 10px 24px rgb(16 24 40 / 10%);
+  }
+
+  .store-product-card:hover .store-product-image .brand-logo,
+  .detail-image:hover .brand-logo {
+    transform: scale(1.045);
+  }
+}
+
+@keyframes content-rise-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes cart-added-pop {
+  0% { transform: scale(0.78); }
+  65% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html,
+  .screen-content,
+  .storefront-scroll,
+  .orders-scroll,
+  .category-tiles {
+    scroll-behavior: auto;
+  }
+
+  .store-product-card,
+  .category-card,
+  .cart-line,
+  .tracking-card,
+  .store-product-add.is-in-cart {
+    animation: none;
+  }
+
+  .store-product-card,
+  .category-card,
+  .store-product-image .brand-logo,
+  .detail-image .brand-logo,
+  .store-product-add,
+  .cart-quantity button,
+  .checkout {
+    transition: none;
+  }
+}

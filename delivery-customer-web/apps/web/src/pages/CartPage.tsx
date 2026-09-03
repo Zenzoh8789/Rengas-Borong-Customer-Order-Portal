@@ -1,18 +1,64 @@
-import { useRef, useState } from "react";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check, Minus, Plus, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { BrandLogo } from "../components/BrandLogo";
 import { useApp } from "../context/AppContext";
 import { api } from "../services/api";
 
+function playOrderSuccessSound() {
+  try {
+    const AudioContextClass =
+      window.AudioContext ||
+      (window as typeof window & { webkitAudioContext?: typeof AudioContext })
+        .webkitAudioContext;
+    if (!AudioContextClass) return;
+
+    const context = new AudioContextClass();
+    const start = context.currentTime + 0.02;
+    const strikeBell = (time: number, fundamental: number) => {
+      [
+        { ratio: 1, volume: 0.24, decay: 1.25 },
+        { ratio: 2.01, volume: 0.12, decay: 0.95 },
+        { ratio: 2.72, volume: 0.07, decay: 0.7 },
+      ].forEach(({ ratio, volume, decay }) => {
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(fundamental * ratio, time);
+        gain.gain.setValueAtTime(volume, time);
+        gain.gain.exponentialRampToValueAtTime(0.0001, time + decay);
+        oscillator.connect(gain);
+        gain.connect(context.destination);
+        oscillator.start(time);
+        oscillator.stop(time + decay);
+      });
+    };
+
+    strikeBell(start, 784);
+    strikeBell(start + 0.22, 987.77);
+    window.setTimeout(() => void context.close(), 1800);
+  } catch {
+    // Order submission must still succeed when browser audio is unavailable.
+  }
+}
+
 export function CartPage() {
+  const navigate = useNavigate();
   const { cart, setQuantity, clearCart, notify } = useApp();
   const [submitting, setSubmitting] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
   const submittingRef = useRef(false);
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   const totalAmount = cart.reduce(
     (sum, item) => sum + item.quantity * Number(item.uom.price),
     0,
   );
+
+  useEffect(() => {
+    if (!orderSuccess) return;
+    const timer = window.setTimeout(() => navigate("/orders"), 2400);
+    return () => window.clearTimeout(timer);
+  }, [navigate, orderSuccess]);
 
   const submit = async () => {
     if (submittingRef.current || !cart.length) return;
@@ -53,7 +99,8 @@ export function CartPage() {
         })),
       );
       clearCart();
-      notify("Order submitted successfully to RENGAS.", "success");
+      playOrderSuccessSound();
+      setOrderSuccess(true);
     } catch {
       notify(
         "Order submission failed. Please check the connection and try again.",
@@ -67,6 +114,16 @@ export function CartPage() {
 
   return (
     <div className="cart-page cart-redesign" aria-busy={submitting}>
+      {orderSuccess && (
+        <div className="order-success-screen" role="status" aria-live="assertive">
+          <div className="order-success-check" aria-hidden="true">
+            <Check />
+          </div>
+          <h1>Order Placed!</h1>
+          <p>Thank you! We’ve received your order and will start preparing it shortly.</p>
+          <span>Opening order tracking…</span>
+        </div>
+      )}
       <header className="cart-title">
         <h1>My Cart ({cart.length})</h1>
       </header>
@@ -80,6 +137,15 @@ export function CartPage() {
                 className="cart-line"
                 key={`${item.product.id}-${item.uom.id}`}
               >
+                <button
+                  className="cart-remove"
+                  type="button"
+                  disabled={submitting}
+                  aria-label={`Remove ${item.product.name}`}
+                  onClick={() => setQuantity(item.product, item.uom, 0)}
+                >
+                  <X aria-hidden="true" />
+                </button>
                 <BrandLogo
                   size={64}
                   src={item.product.imageUrl}
@@ -126,15 +192,6 @@ export function CartPage() {
                       <Plus aria-hidden="true" />
                     </button>
                   </div>
-                  <button
-                    className="cart-remove"
-                    type="button"
-                    disabled={submitting}
-                    aria-label={`Remove ${item.product.name}`}
-                    onClick={() => setQuantity(item.product, item.uom, 0)}
-                  >
-                    <Trash2 aria-hidden="true" />
-                  </button>
                 </div>
               </article>
             ))}
