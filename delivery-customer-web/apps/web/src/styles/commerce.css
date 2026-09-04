@@ -36,7 +36,6 @@
 }
 .mini-stepper,
 .detail-stepper {
-  height: 40px;
   display: grid;
   grid-template-columns: 42px 1fr 42px;
   overflow: hidden;

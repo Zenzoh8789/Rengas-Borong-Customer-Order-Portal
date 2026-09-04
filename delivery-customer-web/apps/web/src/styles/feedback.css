@@ -40,7 +40,7 @@
 
 .app-toast p {
   margin: 0;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 700;
 }
 
@@ -49,7 +49,7 @@
   padding: 0;
   color: inherit;
   background: transparent;
-  font-size: 14px;
+  font-size: 15px;
   cursor: pointer;
 }
 
@@ -69,7 +69,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: clamp(18px, 3vh, 26px);
+  gap: clamp(18px, 4vh, 26px);
   margin: 0;
   padding:
     max(20px, env(safe-area-inset-top))
@@ -125,39 +125,32 @@
    ================================================== */
 
 .welcome .logo-wrap {
+  width: 180px;
+  height: 180px;
   position: relative;
-  width: clamp(150px, 46vw, 180px);
-  height: clamp(150px, 46vw, 180px);
   display: grid;
-  flex: 0 0 auto;
   place-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 28px;
 }
 
 .welcome .logo-ring {
   position: absolute;
   inset: 0;
-  border: 1.7px dashed rgb(255 255 255 / 33%);
+  border: 1.7px dashed #ffffff52;
   border-radius: 50%;
-  pointer-events: none;
-  animation: ring-two-side 8s ease-in-out infinite;
+  animation: spin 18s linear infinite;
 }
 
 .welcome .brand-logo {
-  position: relative;
+  width: 128px;
+  height: 128px;
   z-index: 2;
-  width: clamp(108px, 29vw, 128px);
-  height: clamp(108px, 29vw, 128px);
-  flex: 0 0 auto;
-  border: 7px solid #fff;
-  border-radius: 50%;
+  object-fit: contain;
+  padding: 8px;
   background: #fff;
-  box-shadow:
-    0 0 0 7px rgb(255 255 255 / 8%),
-    0 18px 38px rgb(0 0 0 / 27%);
-  animation:
-    logo-float 2.8s ease-in-out infinite,
-    logo-glow 2.8s ease-in-out infinite;
+  border-radius: 50%;
+  animation: glow 3.2s ease-in-out infinite;
+ 
 }
 
 /* ==================================================
@@ -168,9 +161,8 @@
   position: relative;
   z-index: 2;
   flex: 0 0 auto;
-  margin: 4px 0 0;
   color: #fff;
-  font-size: 14px;
+  font-size: 25px;
   font-weight: 800;
   line-height: 1.4;
   letter-spacing: 0.02em;
@@ -184,7 +176,7 @@
 .welcome-progress {
   position: relative;
   z-index: 2;
-  width: min(160px, 46vw);
+  width: min(170px, 50vw);
   height: 6px;
   flex: 0 0 auto;
   overflow: hidden;
@@ -239,44 +231,11 @@
     transform: rotate(360deg);
   }
 }
-
-@keyframes ring-two-side {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  50% {
-    transform: rotate(360deg);
-  }
-
-  100% {
-    transform: rotate(0deg);
-  }
-}
-
-@keyframes logo-float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-@keyframes logo-glow {
-  0%,
-  100% {
-    box-shadow:
-      0 0 0 7px rgb(255 255 255 / 8%),
-      0 18px 38px rgb(0 0 0 / 27%);
-  }
-
+@keyframes glow {
   50% {
     box-shadow:
-      0 0 0 13px rgb(255 255 255 / 13%),
-      0 18px 38px rgb(0 0 0 / 27%);
+      0 0 0 13px #ffffff20,
+      0 18px 38px #0004;
   }
 }
 
@@ -328,7 +287,4 @@
     animation: none;
   }
 
-  .welcome-progress span {
-    animation-timing-function: linear;
-  }
 }

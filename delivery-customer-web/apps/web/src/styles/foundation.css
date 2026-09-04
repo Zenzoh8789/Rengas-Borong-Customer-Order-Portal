@@ -88,8 +88,8 @@ textarea:focus-visible {
   position: relative;
 }
 .icon-btn svg {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
 }
 .topbar-title {
   min-width: 0;
@@ -100,7 +100,7 @@ textarea:focus-visible {
   align-items: center;
   gap: 4px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
 }
 .topbar-title small svg {
@@ -148,7 +148,7 @@ textarea:focus-visible {
   position: fixed;
   z-index: 19;
   inset: auto 0 0;
-  height: calc(68px + env(safe-area-inset-bottom));
+  height: calc(72px + env(safe-area-inset-bottom));
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   padding: 6px 5px env(safe-area-inset-bottom);
@@ -201,7 +201,7 @@ textarea:focus-visible {
   z-index: 41;
   inset: 0 auto 0 0;
   width: min(86%, 320px);
-  padding: 40px 22px 24px;
+  padding: 60px 22px 24px;
   color: var(--ink);
   background: #fff;
   box-shadow: 24px 0 70px rgb(0 0 0/22%);
@@ -220,15 +220,40 @@ textarea:focus-visible {
   color: var(--muted);
   background: var(--canvas);
 }
-.drawer h2 {
-  margin: 15px 0 3px;
-  font-size: 14px;
+
+.drawer-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+ 
 }
-.drawer p {
-  margin: 0 0 22px;
-  color: var(--muted);
-  font-size: 12px;
+
+.drawer-profile > :first-child {
+  flex-shrink: 0;
 }
+
+.drawer-profile-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.drawer .drawer-profile-info h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.drawer .drawer-profile-info p {
+  margin: 4px 0 0;
+  color: #697184;
+  font-size: 15px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
 .drawer a,
 .drawer .logout {
   width: 100%;
@@ -242,7 +267,8 @@ textarea:focus-visible {
   border-radius: 13px;
   color: #344039;
   background: transparent;
-  font-weight: 700;
+  font-weight: 800;
+  font-size: 15px;
   text-decoration: none;
 }
 .drawer a.active {
@@ -286,7 +312,7 @@ textarea:focus-visible {
   outline: 0;
   color: var(--ink);
   background: transparent;
-  font-size: 12px;
+  font-size: 14px;
 }
 .search-box input::placeholder {
   color: #9299a5;
@@ -321,7 +347,7 @@ textarea:focus-visible {
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--ink);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
 }
 .header-status-dialog {
@@ -346,10 +372,10 @@ textarea:focus-visible {
 }
 .header-status-dialog h2 {
   margin: 0;
-  font-size: 14px;
+  font-size: 16px;
 }
 .header-status-dialog p {
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.6;
 }
 .saved-address {
@@ -367,6 +393,7 @@ textarea:focus-visible {
   border-radius: 8px;
   background: var(--brand-soft);
   color: var(--brand);
+  font-size: 15px;
   font-weight: 700;
 }
 .header-order-list {
@@ -380,7 +407,7 @@ textarea:focus-visible {
   gap: 5px;
   padding: 12px 0;
   border-bottom: 1px solid var(--line);
-  font-size: 12px;
+  font-size: 15px;
   overflow-wrap: anywhere;
 }
 .header-order-list small {
@@ -391,5 +418,5 @@ textarea:focus-visible {
 /* Fixed three-size typography scale, including browser-default text elements. */
 :root { font-size: 13px; }
 h1, h2, h3, h4, h5, h6 { font-size: 14px; }
-small, sub, sup { font-size: 12px; }
+small, sub, sup { font-size: 13px; }
 select { font: inherit; }

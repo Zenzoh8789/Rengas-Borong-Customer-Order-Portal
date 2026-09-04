@@ -1,8 +1,67 @@
 import { CategoryIcon } from "../components/CategoryIcon";
 import { ChevronRight } from "lucide-react";
-import { useEffect,useMemo,useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SearchBox } from "../components/AppShell"; import { api } from "../services/api"; import type { Product,ProductCategory } from "../types";
-const categoryName=(c:ProductCategory)=>typeof c==="string"?c:c?.name||"Uncategorised";
-export function CategoriesPage(){const[products,setProducts]=useState<Product[]>([]);const[search,setSearch]=useState("");const navigate=useNavigate();useEffect(()=>{api.products().then(setProducts).catch(()=>setProducts([]));},[]);const categories=useMemo(()=>Array.from(products.reduce((m,p)=>{const n=categoryName(p.category);m.set(n,(m.get(n)||0)+1);return m;},new Map<string,number>())).filter(([n])=>n.toLowerCase().includes(search.toLowerCase())).sort(([a],[b])=>a.localeCompare(b)),[products,search]);return <div className="categories-page"><div className="categories-controls"><SearchBox value={search} onChange={setSearch} placeholder="Search categories..."/></div><div className="categories-list category-list-modern"><div className="category-heading"><h2>Shop by Category</h2><p>Find everything your business needs</p></div>{categories.map(([name,count])=><button className="category-card" key={name} onClick={()=>navigate(`/?category=${encodeURIComponent(name)}`)}><span className="category-list-icon"><CategoryIcon name={name} /></span><span className="category-card-content"><b>{name.replace(/\s+products$/i,"")}</b><small>{count} {count===1?"Product":"Products"}</small></span><ChevronRight className="category-chevron"/></button>)}{!categories.length&&<div className="empty">No categories found.</div>}</div></div>}
-
+import { SearchBox } from "../components/AppShell";
+import { api } from "../services/api";
+import type { Product, ProductCategory } from "../types";
+const categoryName = (c: ProductCategory) =>
+  typeof c === "string" ? c : c?.name || "Uncategorised";
+export function CategoriesPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [search, setSearch] = useState("");
+  const navigate = useNavigate();
+  useEffect(() => {
+    api
+      .products()
+      .then(setProducts)
+      .catch(() => setProducts([]));
+  }, []);
+  const categories = useMemo(
+    () =>
+      Array.from(
+        products.reduce((m, p) => {
+          const n = categoryName(p.category);
+          m.set(n, (m.get(n) || 0) + 1);
+          return m;
+        }, new Map<string, number>()),
+      )
+        .filter(([n]) => n.toLowerCase().includes(search.toLowerCase()))
+        .sort(([a], [b]) => a.localeCompare(b)),
+    [products, search],
+  );
+  return (
+    <div className="categories-page">
+      <div className="categories-controls">
+        <SearchBox
+          value={search}
+          onChange={setSearch}
+          placeholder="Search categories..."
+        />
+      </div>
+      <div className="categories-list category-list-modern">
+        {categories.map(([name, count]) => (
+          <button
+            className="category-card"
+            key={name}
+            onClick={() => navigate(`/?category=${encodeURIComponent(name)}`)}
+          >
+            <span className="category-list-icon">
+              <CategoryIcon name={name} />
+            </span>
+            <span className="category-card-content">
+              <b>{name.replace(/\s+products$/i, "")}</b>
+              <small>
+                {count} {count === 1 ? "Product" : "Products"}
+              </small>
+            </span>
+            <ChevronRight className="category-chevron" />
+          </button>
+        ))}
+        {!categories.length && (
+          <div className="empty">No categories found.</div>
+        )}
+      </div>
+    </div>
+  );
+}

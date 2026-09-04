@@ -94,9 +94,14 @@ export function AppShell({ children }: { children: ReactNode }) {
             >
               <X />
             </button>
-            <BrandLogo />
-            <h2>RENGAS BORONG</h2>
-            <p>{profile?.fullName?.trim() || "Customer"}</p>
+           <div className="drawer-profile">
+              <BrandLogo size={70} />
+
+              <div className="drawer-profile-info">
+                <h2>{profile?.businessName?.trim() || "RENGAS BORONG"}</h2>
+                <p>{profile?.fullName?.trim() || "Customer"}</p>
+              </div>
+            </div>
             {nav.map(({ to, label, Icon }) => (
               <NavLink key={to} to={to} onClick={() => setMenuOpen(false)}>
                 <Icon />

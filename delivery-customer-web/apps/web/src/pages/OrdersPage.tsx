@@ -1,7 +1,7 @@
-import { RefreshCw } from "lucide-react";
+import { ChevronDown, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SearchBox } from "../components/AppShell";
-import { BrandLogo } from "../components/BrandLogo";
+
 import { api } from "../services/api";
 import type { Order, OrderLine } from "../types";
 
@@ -92,35 +92,39 @@ export function OrdersPage() {
                   </div>
                   <strong>RM {Number(order.total).toFixed(2)}</strong>
                 </header>
-                {items.length ? (
-                  <ul
-                    className="tracking-products"
-                    aria-label={`Products in order ${order.orderNo}`}
-                  >
-                    {items.map((item) => (
-                      <li
-                        key={item.id}
-                        title={`${item.product.name} × ${item.quantity}`}
-                      >
-                        <BrandLogo
-                          size={68}
-                          src={item.product.imageUrl}
-                          alt={item.product.name}
-                        />
-                        <span
-                          className="tracking-quantity"
-                          aria-label={`Quantity ${item.quantity}`}
-                        >
-                          {item.quantity}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="tracking-unavailable">
-                    Product items are not available for this order.
-                  </p>
-                )}
+                <details className="order-products">
+                  <summary className="order-products-toggle">
+                    <span>Products</span>
+                    <span className="order-products-summary-right">
+                      <span>{items.length} items</span>
+                      <ChevronDown size={18} aria-hidden="true" />
+                    </span>
+                  </summary>
+                  {items.length ? (
+                    <ul
+                      className="order-products-list"
+                      aria-label={`Products in order ${order.orderNo}`}
+                    >
+                      {items.map((item) => (
+                        <li key={item.id}>
+                          <span className="order-product-name">
+                            {item.product.name}
+                          </span>
+                          <span
+                            className="order-product-count"
+                            aria-label={`Quantity ${item.quantity}`}
+                          >
+                             {item.quantity}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="order-products-empty">
+                      Product items are not available for this order.
+                    </p>
+                  )}
+                </details>
                 <section
                   className="tracking-section"
                   aria-label={`Tracking for ${order.orderNo}`}
@@ -152,3 +156,4 @@ export function OrdersPage() {
     </div>
   );
 }
+

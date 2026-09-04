@@ -101,7 +101,7 @@ export default function App() {
         </div>
 
         <p className="welcome-label">
-          Welcome to Rengas Borong
+          Welcome to <br/>RENGAS BORONG
         </p>
 
         <div

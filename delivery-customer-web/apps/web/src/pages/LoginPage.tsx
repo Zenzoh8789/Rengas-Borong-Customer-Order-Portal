@@ -52,8 +52,8 @@ export function LoginPage() {
 
         <div className="auth-logo"><BrandLogo size={112} /></div>
         <div className="auth-heading">
-          <h1>{otpSent ? "Confirm OTP" : "Welcome Back"}</h1>
-          <p>{otpSent ? `Enter the 6-digit code sent to ${phoneNumber}` : "Sign in to continue"}</p>
+          <h1>{otpSent ? "Confirm OTP" : <>Welcome to<br />RENGAS BORONG</>}</h1>
+          {/* <p>{otpSent ? `Enter the 6-digit code sent to ${phoneNumber}` : "Sign in to continue"}</p> */}
         </div>
 
         {!otpSent ? (
@@ -135,3 +135,4 @@ export function LoginPage() {
     </main>
   );
 }
+

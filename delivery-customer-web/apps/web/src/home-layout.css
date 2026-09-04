@@ -149,18 +149,18 @@ body,
     var(--nav-height) +
     var(--nav-bottom) +
     env(safe-area-inset-bottom) +
-    60px
+    20px
   ) !important;
 
   scroll-padding-bottom: calc(
     var(--nav-height) +
     var(--nav-bottom) +
     env(safe-area-inset-bottom) +
-    60px
+    20px
   );
 }
 .categories-list .category-card:last-child {
-  margin-bottom: 20px;
+  margin-bottom: 0;
 }
 
 .products-list::-webkit-scrollbar,
@@ -195,17 +195,17 @@ body,
 
 .categories-list .category-card {
   width: 100%;
-  min-height: 104px;
-  margin: 12px 0 0;
-  padding: 16px;
+  min-height: 76px;
+  margin: 0;
+  padding: 10px 12px;
   display: grid;
-  grid-template-columns: 80px minmax(0, 1fr) 24px;
+  grid-template-columns: 48px minmax(0, 1fr) 20px;
   align-items: center;
-  gap: 0;
+  gap: 12px;
   color: #111827;
   background: #fff;
   border: 1px solid #dfe6ef;
-  border-radius: 24px;
+  border-radius: 16px;
   text-align: left;
   cursor: pointer;
 }
@@ -214,19 +214,19 @@ body,
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 3px;
 }
 
 .category-card-content b {
   color: #111;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.25;
   overflow-wrap: anywhere;
 }
 
 .category-card-content small {
   color: #64748b;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .category-chevron {
@@ -278,7 +278,7 @@ body,
   }
 
   .search-box {
-    height: 54px;
+    height: 48px;
     padding: 0 14px;
     gap: 10px;
     border-radius: 14px;
@@ -286,7 +286,6 @@ body,
 
   .search-box input {
     min-width: 0;
-    font-size: 14px;
   }
 
   .search-box svg {
@@ -325,17 +324,8 @@ body,
     padding-bottom: calc(var(--nav-height) + var(--nav-bottom) + 21px);
   }
 
-   .categories-list {
-    padding-bottom: calc(
-      var(--nav-height) +
-      var(--nav-bottom) +
-      env(safe-area-inset-bottom) +
-      70px
-    ) !important;
-  }
-
   .categories-list .category-card:last-child {
-    margin-bottom: 24px;
+    margin-bottom: 0;
   }
 
   .product-card {
@@ -397,24 +387,16 @@ body,
   }
 
   .categories-list .category-card {
-    min-height: 92px;
-    margin-top: 10px;
-    padding: 12px;
-    grid-template-columns: 64px minmax(0, 1fr) 22px;
-    border-radius: 20px;
+    min-height: 72px;
+    margin-top: 0;
+    padding: 10px 12px;
+    grid-template-columns: 48px minmax(0, 1fr) 20px;
+    border-radius: 16px;
   }
 
   .categories-list .brand-logo {
-    width: 54px;
-    height: 54px;
-  }
-
-  .category-card-content b {
-    font-size: 14px;
-  }
-
-  .category-card-content small {
-    font-size: 13px;
+    width: 48px;
+    height: 48px;
   }
 
   .category-chevron {
@@ -424,7 +406,6 @@ body,
 
   .bottom-nav {
     width: 100%;
-    height: var(--nav-height);
     bottom: 0;
     padding: 6px;
   }
@@ -455,3 +436,5 @@ body,
     padding: 0 12px;
   }
 }
+
+

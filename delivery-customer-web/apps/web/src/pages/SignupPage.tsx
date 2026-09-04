@@ -76,7 +76,13 @@ export function SignupPage() {
           <h1>Sign Up</h1>
         </div>
         <p className="signup-intro">Create your Renga Borong account</p>
-
+        <AuthInput
+          icon={<Building2 />}
+          value={businessName}
+          onChange={setBusinessName}
+          placeholder="Business / Company / Shop Name"
+          autoComplete="organization"
+        />
         <AuthInput
           icon={<UserRound />}
           value={fullName}
@@ -84,13 +90,7 @@ export function SignupPage() {
           placeholder="Full Name"
           autoComplete="name"
         />
-        <AuthInput
-          icon={<Building2 />}
-          value={businessName}
-          onChange={setBusinessName}
-          placeholder="Business / Shop Name"
-          autoComplete="organization"
-        />
+       
         <AuthInput
           icon={<Phone />}
           value={whatsappNumber}
@@ -156,11 +156,11 @@ export function SignupPage() {
             onChange={(event) => setAcceptedTerms(event.target.checked)}
             required
           />
-         <span>
-  By creating an account, I confirm that I have read and agree to the{" "}
-  <Link to="/terms">Terms and Conditions</Link> and{" "}
-  <Link to="/privacy">Privacy Policy</Link>.
-</span>
+          <span>
+            By creating an account, I confirm that I have read and agree to the{" "}
+            <Link to="/terms">Terms and Conditions</Link> and{" "}
+            <Link to="/privacy">Privacy Policy</Link>.
+          </span>
         </label>
         {error && (
           <p className="auth-error" role="alert">

@@ -153,65 +153,21 @@
 }
 
 /* Categories */
-.category-heading {
-  margin: 6px 2px 14px;
-}
-.category-heading h2 {
-  margin: 0;
-  font-size: 14px;
-}
-.category-heading p {
-  margin: 4px 0 0;
-  color: var(--muted);
-  font-size: 12px;
-}
 .categories-list {
   display: grid;
+  grid-auto-rows: max-content;
+  align-content: start;
   gap: 10px;
-}
-.category-card {
-  width: 100%;
-  min-height: 84px;
-  display: grid;
-  grid-template-columns: 54px minmax(0, 1fr) 22px;
-  align-items: center;
-  gap: 10px;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: 17px;
-  color: var(--ink);
-  background: #fff;
-  text-align: left;
 }
 .category-list-icon {
-  width: 54px;
-  height: 54px;
+  width: 48px;
+  height: 48px;
   display: grid !important;
   place-items: center;
-  border-radius: 14px;
+  border-radius: 12px;
   background: var(--brand-soft);
   font-size: 14px;
 }
-.category-card-content {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.category-card-content b {
-  overflow: hidden;
-  font-size: 14px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.category-card-content small {
-  color: var(--muted);
-  font-size: 12px;
-}
-.category-chevron {
-  color: #98a19a;
-}
-
 /* Muted fallback logos in product lists and details; actual photos retain their colors. */
 .store-product-image .brand-logo.fallback-logo,
 .detail-image .brand-logo.fallback-logo {
@@ -229,8 +185,6 @@
 }
 .category-list-icon .category-icon {
   display: block;
-  width: 22px;
-  height: 22px;
   font-size: 22px;
   line-height: 1;
 }
@@ -341,3 +295,5 @@
   white-space: normal;
   overflow-wrap: anywhere;
 }
+
+
