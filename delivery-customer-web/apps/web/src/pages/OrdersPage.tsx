@@ -1,6 +1,7 @@
-import { ChevronDown, RefreshCw } from "lucide-react";
+import { ChevronDown, Download, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SearchBox } from "../components/AppShell";
+import "./OrdersPage.css";
 
 import { api } from "../services/api";
 import type { Order, OrderLine } from "../types";
@@ -13,6 +14,7 @@ const stages = ["Accepted", "Packed", "Shipped", "Delivered"];
 
 export function OrdersPage() {
   const [orders, setOrders] = useState<DisplayOrder[]>([]);
+  const [pdfError, setPdfError] = useState("");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -62,6 +64,7 @@ export function OrdersPage() {
         </header>
       </div>
       <div className="orders-scroll">
+        {pdfError && <p role="alert">{pdfError}</p>}
         {loading ? (
           <p role="status">Loading orders...</p>
         ) : error ? (
@@ -86,12 +89,23 @@ export function OrdersPage() {
                 <header className="tracking-card-header">
                   <div>
                     <h2>{order.orderNo}</h2>
-                    <p>
-                      {order.date} · {order.itemCount} items
-                    </p>
                   </div>
                   <strong>RM {Number(order.total).toFixed(2)}</strong>
                 </header>
+                <div className="order-meta-row"><span>{order.date} · {order.itemCount} items</span><button type="button" className="order-download-button"
+                  aria-label={`Download PDF for order ${order.orderNo}`}
+                  onClick={async () => {
+                    setPdfError("");
+                    try {
+                      const { downloadOrderPdf } = await import("../services/orderPdf");
+                      downloadOrderPdf(order);
+                    } catch {
+                      setPdfError("Unable to download the PDF. Please try again.");
+                    }
+                  }}
+                >
+                  <Download size={14} aria-hidden="true" /> Download
+                </button></div>
                 <details className="order-products">
                   <summary className="order-products-toggle">
                     <span>Products</span>

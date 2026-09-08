@@ -11,8 +11,7 @@
     margin-inline: auto;
   }
 
-  .bottom-nav,
-  .detail-cart-bar {
+  .bottom-nav {
     left: 50%;
     right: auto;
     width: var(--frame-width);
@@ -31,12 +30,9 @@
   min-height: 0;
 }
 
-/* Reserve room for both fixed bars on product details, including phone safe areas. */
-.detail-cart-bar {
-  bottom: calc(72px + env(safe-area-inset-bottom));
-}
+/* Reserve room for bottom navigation, including phone safe areas. */
 .page-product-detail {
-  padding-bottom: calc(164px + env(safe-area-inset-bottom));
+  padding-bottom: calc(90px + env(safe-area-inset-bottom));
 }
 
 @media (prefers-reduced-motion: reduce) {

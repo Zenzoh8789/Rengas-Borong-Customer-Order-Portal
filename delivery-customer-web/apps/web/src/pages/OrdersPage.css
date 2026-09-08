@@ -1,0 +1,37 @@
+.orders-redesign .order-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 6px 0 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.order-meta-row > span {
+  min-width: 0;
+}
+.orders-redesign .order-download-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex-shrink: 0;
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: #1111af;
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.orders-redesign .order-download-button:hover {
+  background: #0d0d8c;
+}
+.orders-redesign .order-download-button:focus-visible {
+  outline: 2px solid #1111af;
+  outline-offset: 3px;
+}

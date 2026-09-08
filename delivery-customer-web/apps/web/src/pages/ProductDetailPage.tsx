@@ -1,4 +1,4 @@
-import { ArrowLeft, Star } from "lucide-react";
+import { ArrowLeft, Plus, ShoppingCart, Star } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BrandLogo } from "../components/BrandLogo";
@@ -17,9 +17,8 @@ export function ProductDetailPage() {
 function ProductDetails() {
   const { productId } = useParams();
   const navigate = useNavigate();
-  const { cart, setQuantity, notify } = useApp();
+  const { cart, setQuantity } = useApp();
   const [products, setProducts] = useState<Product[]>([]);
-  const [quantity, setLocalQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   useLayoutEffect(() => {
@@ -82,13 +81,12 @@ function ProductDetails() {
         </button>
       </div>
     );
-  const add = () => {
+  const inCart = !!uom && cart.some(
+    (item) => item.product.id === product.id && item.uom.id === uom.id && item.quantity > 0,
+  );
+  const toggleCart = () => {
     if (!uom) return;
-    const current =
-      cart.find((x) => x.product.id === product.id && x.uom.id === uom.id)
-        ?.quantity || 0;
-    setQuantity(product, uom, current + quantity);
-    notify(`${quantity} × ${product.name} added to cart.`, "success");
+    setQuantity(product, uom, inCart ? 0 : 1);
   };
   return (
     <div className="product-detail-page">
@@ -98,6 +96,17 @@ function ProductDetails() {
       <div className="detail-scroll">
         <div className="detail-image">
           <BrandLogo size={260} src={product.imageUrl} alt={product.name} />
+          {uom && (
+            <button
+              type="button"
+              className={`store-product-add${inCart ? " is-in-cart" : ""}`}
+              aria-label={`${inCart ? "Remove" : "Add"} ${product.name} ${inCart ? "from" : "to"} cart`}
+              aria-pressed={inCart}
+              onClick={toggleCart}
+            >
+              {inCart ? <ShoppingCart aria-hidden="true" /> : <Plus aria-hidden="true" />}
+            </button>
+          )}
         </div>
         <div className="detail-info">
           <small>{categoryName(product.category)}</small>
@@ -133,18 +142,6 @@ function ProductDetails() {
             </div>
           </section>
         )}
-      </div>
-      <div className="detail-cart-bar">
-        <div className="detail-stepper">
-          <button onClick={() => setLocalQuantity(Math.max(1, quantity - 1))}>
-            −
-          </button>
-          <b>{quantity}</b>
-          <button onClick={() => setLocalQuantity(quantity + 1)}>+</button>
-        </div>
-        <button className="detail-add" disabled={!uom} onClick={add}>
-          Add to Cart · RM {(Number(uom?.price || 0) * quantity).toFixed(2)}
-        </button>
       </div>
     </div>
   );
