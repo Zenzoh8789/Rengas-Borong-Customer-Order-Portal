@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Check, Minus, Plus, X } from "lucide-react";
+import { Check, Minus, Plus, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { BrandLogo } from "../components/BrandLogo";
 import { useApp } from "../context/AppContext";
@@ -144,7 +144,7 @@ export function CartPage() {
                   aria-label={`Remove ${item.product.name}`}
                   onClick={() => setQuantity(item.product, item.uom, 0)}
                 >
-                  <X  size={24} strokeWidth={4}  aria-hidden="true" />
+                  <Trash2 size={16} aria-hidden="true" />
                 </button>
                 <BrandLogo
                   size={64}
@@ -153,12 +153,12 @@ export function CartPage() {
                 />
                 <div className="cart-line-info">
                   <h2>{item.product.name}</h2>
-                  <p>{item.uom.pack || item.uom.name}</p>
+                  <p>{item.uom.pack || item.uom.name}{item.product.code && ` · ${item.product.code}`}</p>
+                </div>
                   <div className="cart-line-price">
                     <strong>RM {Number(item.uom.price).toFixed(2)}</strong>
                     <span> / {item.uom.name || "unit"}</span>
                   </div>
-                </div>
                 <div className="cart-line-actions">
                   <div className="cart-quantity">
                     <button

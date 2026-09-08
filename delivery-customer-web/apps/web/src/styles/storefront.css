@@ -31,7 +31,7 @@
 .category-tiles button b {
   max-width: 100%;
   overflow: hidden;
-  font-size: 13px;
+  font-size: 14px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -140,14 +140,14 @@
 .store-product-price b {
   display: block;
   color: var(--ink);
-  font-size: 12px;
+  font-size: 13px;
   white-space: nowrap;
 }
 .store-product-price small {
   display: block;
   overflow: hidden;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -274,7 +274,7 @@
 .store-product-card h3 {
   height: auto;
   min-height: 2.9em;
-  font-size: 13px;
+  font-size: 14px;
   overflow-wrap: anywhere;
 }
 .store-product-card h3 a {

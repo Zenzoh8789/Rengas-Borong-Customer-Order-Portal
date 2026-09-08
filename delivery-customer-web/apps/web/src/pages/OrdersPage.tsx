@@ -1,7 +1,6 @@
 import { ChevronDown, Download, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SearchBox } from "../components/AppShell";
-import "./OrdersPage.css";
 
 import { api } from "../services/api";
 import type { Order, OrderLine } from "../types";
@@ -92,20 +91,23 @@ export function OrdersPage() {
                   </div>
                   <strong>RM {Number(order.total).toFixed(2)}</strong>
                 </header>
-                <div className="order-meta-row"><span>{order.date} · {order.itemCount} items</span><button type="button" className="order-download-button"
-                  aria-label={`Download PDF for order ${order.orderNo}`}
-                  onClick={async () => {
-                    setPdfError("");
-                    try {
-                      const { downloadOrderPdf } = await import("../services/orderPdf");
-                      downloadOrderPdf(order);
-                    } catch {
-                      setPdfError("Unable to download the PDF. Please try again.");
-                    }
-                  }}
-                >
-                  <Download size={14} aria-hidden="true" /> Download
-                </button></div>
+                <div className="order-meta-row">
+                  <span>{order.date} · {order.itemCount} items</span>
+                  <button type="button" className="order-download-button"
+                    aria-label={`Download PDF for order ${order.orderNo}`}
+                    onClick={async () => {
+                      setPdfError("");
+                      try {
+                        const { downloadOrderPdf } = await import("../services/orderPdf");
+                        downloadOrderPdf(order);
+                      } catch {
+                        setPdfError("Unable to download the PDF. Please try again.");
+                      }
+                    }}
+                  >
+                    <Download size={14} aria-hidden="true" /> Download
+                  </button>
+                </div>
                 <details className="order-products">
                   <summary className="order-products-toggle">
                     <span>Products</span>

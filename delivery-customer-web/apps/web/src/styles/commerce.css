@@ -249,6 +249,7 @@ button:disabled {
   color: var(--brand);
   background: transparent;
   font-weight: 800;
+  font-size: 14px;
 }
 .detail-back svg {
   width: 19px;
@@ -268,7 +269,7 @@ button:disabled {
 }
 .detail-info > small {
   color: var(--brand);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 800;
   text-transform: uppercase;
 }
@@ -296,7 +297,7 @@ button:disabled {
 }
 .detail-price span {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
 }
 .detail-image .store-product-add {
