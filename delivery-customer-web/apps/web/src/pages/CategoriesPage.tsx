@@ -8,15 +8,20 @@ import type { Product, ProductCategory } from "../types";
 const categoryName = (c: ProductCategory) =>
   typeof c === "string" ? c : c?.name || "Uncategorised";
 export function CategoriesPage() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(() => api.cachedProducts() || []);
+  const [loading, setLoading] = useState(() => !api.cachedProducts());
+  const [error, setError] = useState(false);
+  const [retry, setRetry] = useState(0);
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
   useEffect(() => {
-    api
-      .products()
-      .then(setProducts)
-      .catch(() => setProducts([]));
-  }, []);
+    let active = true;
+    setLoading(!api.cachedProducts()); setError(false);
+    api.products().then(items => { if (active) setProducts(items); })
+      .catch(() => { if (active) setError(true); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [retry]);
   const categories = useMemo(
     () =>
       Array.from(
@@ -40,6 +45,8 @@ export function CategoriesPage() {
         />
       </div>
       <div className="categories-list category-list-modern">
+        {loading && <p role="status">Loading…</p>}
+        {error && <div role="alert">Unable to load. <button onClick={() => setRetry(value => value + 1)}>Try again</button></div>}
         {categories.map(([name, count]) => (
           <button
             className="category-card"
@@ -58,7 +65,7 @@ export function CategoriesPage() {
             <ChevronRight className="category-chevron" />
           </button>
         ))}
-        {!categories.length && (
+        {!loading && !error && !categories.length && (
           <div className="empty">No categories found.</div>
         )}
       </div>

@@ -25,9 +25,22 @@ export function resolveApiAssetUrl(value?: string | null) {
   return url.toString();
 }
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+const pendingGets = new Map<string, Promise<unknown>>();
+
+function request<T>(path: string, init?: RequestInit): Promise<T> {
+  if (init?.method && init.method !== "GET") return performRequest<T>(path, init);
+  const key = `${localStorage.getItem("rengas-token") || ""}:${path}`;
+  const existing = pendingGets.get(key);
+  if (existing) return existing as Promise<T>;
+  const pending = performRequest<T>(path, init).finally(() => pendingGets.delete(key));
+  pendingGets.set(key, pending);
+  return pending;
+}
+
+async function performRequest<T>(path: string, init?: RequestInit): Promise<T> {
   const token = localStorage.getItem("rengas-token");
   const response = await fetch(`${BASE}${path}`, {
+    ...(!init?.method || init.method === "GET" ? { signal: AbortSignal.timeout(20000) } : {}),
     credentials: "include",
     ...init,
     headers: {
@@ -50,6 +63,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 let productsRequest: Promise<Product[]> | undefined;
+let productsKey = "";
+let productsLoadedAt = 0;
+let productSnapshot: { key: string; items: Product[] } | undefined;
 
 export const api = {
   me: () =>
@@ -88,15 +104,23 @@ export const api = {
       method: "PATCH",
       body: JSON.stringify(customer),
     }),
+  cachedProducts: () => productSnapshot?.key === (localStorage.getItem("rengas-token") || "") ? productSnapshot.items : undefined,
   products: () => {
-    if (!productsRequest) {
-      productsRequest = request<Product[]>("/store/products").catch((error) => {
+    const key = localStorage.getItem("rengas-token") || "";
+    if (!productsRequest || key !== productsKey || Date.now() - productsLoadedAt > 60_000) {
+      productsKey = key;
+      productsLoadedAt = Date.now();
+      productsRequest = request<Product[]>("/store/products").then(items => {
+        if (productsKey === key) productSnapshot = { key, items };
+        return items;
+      }).catch((error) => {
         productsRequest = undefined;
         throw error;
       });
     }
     return productsRequest;
   },
+  recentOrders: () => request<Pick<Order, "id" | "orderNo" | "date" | "status">[]>("/store/orders/recent"),
   orders: () => request<Order[]>("/store/orders"),
   createOrder: (
     customer: { name: string; companyName?: string; tinNumber: string; phoneNumber?: string; whatsappNumber?: string; address?: string },

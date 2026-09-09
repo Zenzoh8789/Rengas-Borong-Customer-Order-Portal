@@ -5,6 +5,8 @@ import { useApp } from "../context/AppContext";
 import { api } from "../services/api";
 import type { Order } from "../types";
 
+type RecentOrder = Pick<Order, "id" | "orderNo" | "date" | "status">;
+
 const titles: Record<string, string> = {
   "/": "RENGAS",
   "/categories": "Categories",
@@ -13,7 +15,7 @@ const titles: Record<string, string> = {
   "/account": "My Account",
 };
 const NOTIFICATION_SEEN_KEY = "rengas-orders-seen";
-const orderSignature = (items: Order[]) =>
+const orderSignature = (items: RecentOrder[]) =>
   [...items]
     .sort((a, b) => Number(b.id) - Number(a.id))
     .map((order) => `${order.id}:${order.status}`)
@@ -25,11 +27,13 @@ export function HeaderStatus() {
   const navigate = useNavigate();
   const dialog = useRef<HTMLDialogElement>(null);
   const requestId = useRef(0);
+  const [loaded, setLoaded] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<RecentOrder[]>([]);
   const [hasUnread, setHasUnread] = useState(false);
 
+  const seenKey = `${NOTIFICATION_SEEN_KEY}:${profile?.id || "customer"}`;
   const businessName = profile?.businessName?.trim();
   const address = profile?.address?.trim();
 
@@ -39,7 +43,7 @@ export function HeaderStatus() {
     setError("");
 
     try {
-      const items = await api.orders();
+      const items = await api.recentOrders();
       if (id === requestId.current) {
         const recent = [...items]
             .sort(
@@ -48,10 +52,12 @@ export function HeaderStatus() {
             )
             .slice(0, 10);
         setOrders(recent);
+        setLoaded(true);
         const signature = orderSignature(recent);
-        const seen = localStorage.getItem(NOTIFICATION_SEEN_KEY);
+        let seen: string | null = null;
+        try { seen = localStorage.getItem(seenKey); } catch { /* Optional seen marker. */ }
         if (markSeen || seen === null) {
-          localStorage.setItem(NOTIFICATION_SEEN_KEY, signature);
+          try { localStorage.setItem(seenKey, signature); } catch { /* Keep notifications usable without storage. */ }
           setHasUnread(false);
         } else {
           setHasUnread(signature !== seen);
@@ -66,7 +72,7 @@ export function HeaderStatus() {
         );
       }
     } finally {
-      if (showLoading && id === requestId.current) {
+      if (id === requestId.current) {
         setBusy(false);
       }
     }
@@ -74,15 +80,14 @@ export function HeaderStatus() {
 
   useEffect(() => {
     void load(false);
-    const timer = window.setInterval(() => void load(false), 30_000);
-    return () => window.clearInterval(timer);
+    const timer = window.setInterval(() => { if (!document.hidden && !dialog.current?.open) void load(false); }, 30_000);
+    return () => { window.clearInterval(timer); requestId.current += 1; };
   }, []);
 
   const open = () => {
-    setOrders([]);
     setError("");
     dialog.current?.showModal();
-    void load(true, true);
+    void load(!loaded, true);
   };
 
   const close = () => {
@@ -96,7 +101,7 @@ export function HeaderStatus() {
       <div className="topbar-title header-location">
         <small>
           <MapPin size={16} aria-hidden />
-          {businessName || "Current Location"}
+          <span className="header-shop-name" title={businessName || "Current Location"}>{businessName || "Current Location"}</span>
         </small>
         <span className="header-address">
           {address || titles[pathname] || "RENGAS BORONG"}
@@ -135,19 +140,14 @@ export function HeaderStatus() {
           </button>
         </header>
 
-        {busy && <p role="status">Loading recent order activity…</p>}
+        {busy && !loaded && <p role="status">Loading recent order activity…</p>}
         {error && (
           <p role="alert" className="form-error">
             {error}
           </p>
         )}
 
-        <p className="header-status-hint">
-          Recent order activity. This view is not a push-notification inbox.
-        </p>
-
-        {!busy &&
-          !error &&
+{loaded &&
           (orders.length > 0 ? (
             <ul className="header-order-list">
               {orders.map((order) => (

@@ -46,7 +46,6 @@
   display: grid;
   grid-template-columns: 56px minmax(0, 1fr) auto;
   gap: 10px;
-  align-items: center;
   padding: 10px 0;
   border-bottom: 1px solid #e3e6ee;
 }
@@ -84,18 +83,18 @@
 }
 .order-success-screen h1 {
   margin: 0 0 10px;
-  font-size: clamp(30px, 8vw, 44px);
+  font-size: 16px;
 }
 .order-success-screen p {
   max-width: 430px;
   margin: 0;
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1.5;
 }
 .order-success-screen > span {
   margin-top: 18px;
   color: rgba(255, 255, 255, 0.82);
-  font-size: 13px;
+  font-size: 14px;
 }
 @keyframes success-screen-in {
   from { opacity: 0; }
@@ -120,13 +119,10 @@
   top: 10px;
   right: 0;
   z-index: 2;
-  width: 24px;
-  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1px solid #fecaca;
-  border-radius: 50%;
   background: #fff1f2;
   color: #dc2626;
 }
@@ -134,36 +130,24 @@
   border-color: #fca5a5;
   background: #ffe4e6;
 }
-.cart-redesign .cart-line > .brand-logo {
-  width: 56px;
-  height: 80px;
-  object-fit: contain;
-  border-radius: 0;
-}
 .cart-redesign .cart-line-info {
   min-width: 0;
 }
 .cart-redesign .cart-line-info h2 {
   margin: 0 0 5px;
-  font-size: 14px;
-  line-height: 1.4;
   overflow-wrap: anywhere;
 }
 .cart-redesign .cart-line-info p {
   margin: 0 0 5px;
   color: #667085;
-  font-size: 13px;
 }
 .cart-redesign .cart-line-price {
-  line-height: 1.5;
   overflow-wrap: anywhere;
 }
 .cart-redesign .cart-line-price strong {
-  font-size: 14px;
   color: var(--brand);
 }
 .cart-redesign .cart-line-price span {
-  font-size: 13px;
   color: #667085;
 }
 .cart-redesign .cart-line-actions {
@@ -175,29 +159,20 @@
 .cart-redesign .cart-quantity {
   display: grid;
   grid-template-columns: 40px minmax(25px, 1fr) 40px;
-  width: 112px;
   align-items: center;
   border: 1px solid #e3e6ee;
-  border-radius: 8px;
 }
 .cart-redesign .cart-quantity button {
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 46px;
   padding: 0;
   border: 0;
   background: transparent;
   color: #667085;
 }
 .cart-redesign .cart-quantity span {
-  font-size: 16px;
   text-align: center;
   font-weight: 700;
-}
-.cart-redesign .cart-line-actions svg {
-  width: 20px;
-  height: 20px;
 }
 .cart-redesign .cart-summary {
   padding-top: 20px;
@@ -215,9 +190,6 @@
   .cart-redesign .cart-line {
     grid-template-columns: 44px minmax(0, 1fr);
     gap: 8px;
-  }
-  .cart-redesign .cart-line > .brand-logo {
-    width: 44px;
   }
   .cart-redesign .cart-line-actions {
     grid-column: 2;
@@ -267,7 +239,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  font-size: 13px;
+  font-size: 14px;
 }
 .orders-redesign .orders-controls {
   flex: 0 0 auto;
@@ -444,7 +416,7 @@
   align-items: center;
   gap: 8px;
   color: #667085;
-  font-size: 13px;
+  font-size: 14px;
 }
 .orders-redesign .tracking-steps li:not(:first-child)::before {
   content: "";
@@ -474,14 +446,10 @@
 .orders-redesign .tracking-steps li.reached:not(:first-child)::before {
   background: #078848;
 }
-.cart-redesign .cart-remove svg {
-  width: 14px;
-  height: 14px;
-}
 .orders-redesign .tracking-unavailable {
   margin: 12px 0 0;
   color: #667085;
-  font-size: 12px;
+  font-size: 14px;
 }
 .orders-redesign button:disabled {
   opacity: 0.6;
@@ -555,12 +523,12 @@
   line-height: 1.4;
 }
 .cart-redesign .cart-line-price strong {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
   color: var(--brand, #1111af);
 }
 .cart-redesign .cart-line-price span {
-  font-size: 13px;
+  font-size: 14px;
   color: #7b879c;
 }
 .cart-redesign .cart-line-actions {

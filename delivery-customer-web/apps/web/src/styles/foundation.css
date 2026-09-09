@@ -1,6 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
+
 :root {
-  font-family: Manrope, system-ui, sans-serif;
+  font-family: "Manrope", sans-serif;
+
   color: #111827;
   background: #f5f6fa;
   font-synthesis: none;
@@ -17,6 +19,12 @@
   --danger: #f44336;
   --shadow: 0 12px 36px rgb(17 17 175/8%);
   --radius: 16px;
+}
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
 }
 * {
   box-sizing: border-box;
@@ -69,7 +77,7 @@ textarea:focus-visible {
   gap: 10px;
   padding: 8px 14px;
   color: var(--ink);
-  background:#FFFFFF;
+  background: #ffffff;
   border-bottom: 1px solid var(--line);
   box-shadow: 0 2px 12px rgb(16 24 40/4%);
   position: sticky;
@@ -110,7 +118,7 @@ textarea:focus-visible {
   margin: 3px 0 0;
   overflow: hidden;
   color: var(--ink);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -121,13 +129,11 @@ textarea:focus-visible {
   display: grid;
   place-items: center;
   min-width: 18px;
-  height: 18px;
   padding: 0 4px;
-  border: 2px solid #fff;
   border-radius: 99px;
   color: #fff;
   background: var(--danger);
-  font-size: 12px;
+  font-size: 13px;
 }
 .notification-btn b {
   top: 3px;
@@ -226,7 +232,6 @@ textarea:focus-visible {
   align-items: center;
   gap: 12px;
   margin-bottom: 24px;
- 
 }
 
 .drawer-profile > :first-child {
@@ -329,7 +334,7 @@ textarea:focus-visible {
 .form-error,
 .auth-error {
   color: var(--danger);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 /* Saved location and recent-order panels; no fabricated notification badge. */
@@ -348,7 +353,7 @@ textarea:focus-visible {
   white-space: nowrap;
   color: var(--ink);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 700 !important;
 }
 .header-status-dialog {
   width: min(420px, calc(100% - 28px));
@@ -415,8 +420,138 @@ textarea:focus-visible {
   color: var(--muted);
 }
 
-/* Fixed three-size typography scale, including browser-default text elements. */
-:root { font-size: 13px; }
-h1, h2, h3, h4, h5, h6 { font-size: 14px; }
-small, sub, sup { font-size: 13px; }
-select { font: inherit; }
+/* Shared typography. Context selectors keep page styles from overriding the scale. */
+:root {
+  font-weight: 400;
+  --font-family: "Manrope", sans-serif;
+}
+html body {
+  font-family: var(--font-family);
+}
+html body :is(button, input, select, textarea) {
+  font-family: var(--font-family);
+}
+html body :is(button, .checkout, .order-download-button, .drawer a) {
+  font-size: 14px;
+  font-weight: 800;
+}
+html
+  body
+  :is(
+    .store-product-card h3,
+    .store-product-card h3 a,
+    .detail-info h1,
+    .cart-redesign .cart-line-info h2,
+    .order-product-name
+  ) {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+html
+  body
+  :is(
+    .store-product-price b,
+    .detail-price,
+    .cart-redesign .cart-line-price strong,
+    .tracking-card-header strong,
+    .cart-summary strong
+  ) {
+  font-size: 16px;
+  font-weight: 700;
+}
+html
+  body
+  :is(
+    .store-product-description,
+    .store-product-price small,
+    .detail-price span,
+    .detail-info > small,
+    .cart-redesign .cart-line-info p,
+    .cart-redesign .cart-line-price span,
+    .order-meta-row,
+    .tracking-card-header p,
+    .header-order-list small,
+    .tracking-steps li,
+    small
+  ) {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+html
+  body
+  :is(
+    .screen-content h1,
+    .cart-redesign .cart-title h1,
+    .orders-redesign .tracking-heading h1,
+    .auth-card h1,
+    .header-status-dialog h2
+  ) {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+/* A product title uses the product-name scale, even on the details page. */
+html body .screen-content .detail-info h1 {
+  font-size: 14px;
+  font-weight: 600;
+}
+html
+  body
+  :is(
+    input,
+    select,
+    textarea,
+    .header-address,
+    .topbar-title small,
+    .drawer-profile-info p,
+    .header-status-dialog p,
+    .header-order-list li,
+    .empty
+  ) {
+  font-size: 14px;
+  font-weight: 400;
+}
+html body :is(.bottom-nav a, .bottom-nav a.active) {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* Site-wide 14–16px type scale, including native text elements. */
+:root {
+  font-size: 14px;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 16px;
+}
+small,
+sub,
+sup {
+  font-size: 14px;
+}
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+/* Keep long shop names within the middle header column. */
+.topbar-title small {
+  min-width: 0;
+}
+.topbar-title small svg {
+  flex-shrink: 0;
+}
+.header-shop-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

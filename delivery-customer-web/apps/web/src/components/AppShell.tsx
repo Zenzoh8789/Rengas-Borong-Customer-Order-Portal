@@ -73,7 +73,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <NavLink key={to} to={to} end={to === "/"}>
             <span className="nav-icon">
               <Icon />
-              {label === "Cart" && count > 0 && <b>{count}</b>}
+              {label === "Cart" && count > 0 && (<b aria-label={`${count} items in cart`} title={`${count} items in cart`}>{count > 99 ? "99+" : count}</b>)}
             </span>
             <span>{label}</span>
           </NavLink>

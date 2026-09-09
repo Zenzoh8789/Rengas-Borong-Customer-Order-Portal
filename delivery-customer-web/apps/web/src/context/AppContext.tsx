@@ -5,6 +5,9 @@ import type { CartItem, Product, ProductUom } from "../types";
 type Notice = { type: "success" | "error" | "info"; message: string };
 type AppState = {
   authenticated: boolean;
+  authLoading: boolean;
+  authError: string;
+  retryAuth: () => void;
   profile: CustomerProfile | null;
   cart: CartItem[];
   refreshProfile: () => Promise<void>;
@@ -24,11 +27,15 @@ const Context = createContext<AppState | null>(null);
 const errorMessage = (error: unknown, fallback: string) => error instanceof Error ? error.message : fallback;
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const [authError, setAuthError] = useState("");
+  const [authAttempt, setAuthAttempt] = useState(0);
+  const [authLoading, setAuthLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(() => sessionStorage.getItem("rengas-auth") === "1");
   const [cart, setCart] = useState<CartItem[]>(() => {
     try {
       const saved = localStorage.getItem("rengas-cart");
-      return saved ? JSON.parse(saved) as CartItem[] : [];
+      const parsed: unknown = saved ? JSON.parse(saved) : [];
+      return Array.isArray(parsed) ? parsed.filter((item) => item?.product?.id && item?.uom?.id && Number.isFinite(item.quantity) && item.quantity > 0) : [];
     } catch {
       return [];
     }
@@ -44,7 +51,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [notice]);
 
   useEffect(() => {
-    localStorage.setItem("rengas-cart", JSON.stringify(cart));
+    try { localStorage.setItem("rengas-cart", JSON.stringify(cart)); } catch { /* Storage may be unavailable. */ }
   }, [cart]);
 
   useEffect(() => {
@@ -63,6 +70,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setAuthenticated(false);
         setProfile(null);
         sessionStorage.removeItem("rengas-auth");
+      }).finally(() => {
+        if (active) setAuthLoading(false);
       });
     return () => { active = false; };
   }, []);
@@ -184,9 +193,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const value = useMemo(() => ({
-    authenticated, profile, cart, refreshProfile, updateProfile, login, loginCustomerWithPassword, signUp, sendOtp, verifyOtp, logout, notify, setQuantity,
+    authenticated, authLoading, authError, retryAuth: () => setAuthAttempt(value => value + 1), profile, cart, refreshProfile, updateProfile, login, loginCustomerWithPassword, signUp, sendOtp, verifyOtp, logout, notify, setQuantity,
     clearCart: () => setCart([]),
-  }), [authenticated, cart, profile]);
+  }), [authenticated, authLoading, authError, cart, profile]);
 
   return (
     <Context.Provider value={value}>

@@ -1,13 +1,17 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import { AppShell } from "./components/AppShell";
 import { BrandLogo } from "./components/BrandLogo";
+
+const SPLASH_DURATION_MS = 1500;
+
+import { AppShell } from "./components/AppShell";
+
 import { useApp } from "./context/AppContext";
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
 
-const SPLASH_DURATION_MS = 1500;
+
 
 const HomePage = lazy(() =>
   import("./pages/HomePage").then((module) => ({
@@ -54,7 +58,7 @@ function Protected() {
 
   return (
     <AppShell>
-      <Suspense fallback={null}>
+      <Suspense fallback={<p role="status">Loading page…</p>}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/categories" element={<CategoriesPage />} />
@@ -76,51 +80,31 @@ function Protected() {
 
 export default function App() {
   const [initialLoading, setInitialLoading] = useState(true);
-
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setInitialLoading(false);
-    }, SPLASH_DURATION_MS);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
+    const timer = window.setTimeout(() => setInitialLoading(false), SPLASH_DURATION_MS);
+    return () => window.clearTimeout(timer);
   }, []);
-
-  if (initialLoading) {
-    return (
-      <main
-        className="welcome"
-        role="status"
-        aria-live="polite"
-        aria-label="Loading Rengas Borong"
-      >
-        <div className="logo-wrap">
-          <span className="logo-ring" aria-hidden="true" />
-          <BrandLogo size={128} />
-        </div>
-
-        <p className="welcome-label">
-          Welcome to <br/>RENGAS BORONG
-        </p>
-
-        <div
-          className="welcome-progress"
-          role="progressbar"
-          aria-label="Loading application"
-          aria-valuemin={0}
-          aria-valuemax={100}
-        >
-          <span
-            aria-hidden="true"
-            style={{
-              animationDuration: `${SPLASH_DURATION_MS}ms`,
-            }}
-          />
-        </div>
-      </main>
-    );
-  }
+  const { authLoading, authError, retryAuth, authenticated } = useApp();
+  useEffect(() => {
+    if (authLoading || !authenticated) return;
+    const timer = window.setTimeout(() => {
+      void Promise.allSettled([import("./pages/HomePage"), import("./pages/CategoriesPage"), import("./pages/ProductDetailPage"), import("./pages/CartPage"), import("./pages/OrdersPage"), import("./pages/AccountPage")]);
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [authLoading, authenticated]);
+  if (authError && !authLoading) return <main className="empty" role="alert"><p>{authError}</p><button onClick={retryAuth}>Try again</button></main>;
+  if (initialLoading || authLoading) return (
+    <main className="welcome" role="status" aria-live="polite" aria-label="Loading Rengas Borong">
+      <div className="logo-wrap">
+        <span className="logo-ring" aria-hidden="true" />
+        <BrandLogo size={128} />
+      </div>
+      <p className="welcome-label">Welcome to <br />RENGAS BORONG</p>
+      <div className="welcome-progress" role="progressbar" aria-label="Loading application">
+        <span aria-hidden="true" style={{ animationDuration: SPLASH_DURATION_MS + "ms" }} />
+      </div>
+    </main>
+  );
 
   return (
     <Routes>

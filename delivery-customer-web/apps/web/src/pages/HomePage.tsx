@@ -8,16 +8,21 @@ import type { Product, ProductCategory } from "../types";
 const categoryName = (category: ProductCategory) =>
   typeof category === "string" ? category : category?.name || "Uncategorised";
 export function HomePage() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(() => api.cachedProducts() || []);
+  const [loading, setLoading] = useState(() => !api.cachedProducts());
+  const [error, setError] = useState(false);
+  const [retry, setRetry] = useState(0);
   const [search, setSearch] = useState("");
   const [params] = useSearchParams();
   const navigate = useNavigate();
   useEffect(() => {
-    api
-      .products()
-      .then(setProducts)
-      .catch(() => setProducts([]));
-  }, []);
+    let active = true;
+    setLoading(!api.cachedProducts()); setError(false);
+    api.products().then(items => { if (active) setProducts(items); })
+      .catch(() => { if (active) setError(true); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [retry]);
   const categories = useMemo(
     () => [
       "All",
@@ -80,6 +85,8 @@ export function HomePage() {
         </div>
       </div>
       <div className="storefront-scroll">
+        {loading && <p role="status">Loading…</p>}
+        {error && <div role="alert">Unable to load. <button onClick={() => setRetry(value => value + 1)}>Try again</button></div>}
         {sections.map(
           ([name, items]) =>
             items.length > 0 && (
@@ -98,7 +105,7 @@ export function HomePage() {
               </section>
             ),
         )}
-        {!matching.length && (search || requested !== "All") && (
+        {!loading && !error && !matching.length && (search || requested !== "All") && (
           <div className="empty">No products found.</div>
         )}
       </div>

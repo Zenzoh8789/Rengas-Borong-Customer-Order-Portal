@@ -1,5 +1,5 @@
 import { ChevronDown, Download, RefreshCw } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SearchBox } from "../components/AppShell";
 
 import { api } from "../services/api";
@@ -12,24 +12,28 @@ interface DisplayOrder extends Order {
 const stages = ["Accepted", "Packed", "Shipped", "Delivered"];
 
 export function OrdersPage() {
+  const requestId = useRef(0);
   const [orders, setOrders] = useState<DisplayOrder[]>([]);
   const [pdfError, setPdfError] = useState("");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const loadOrders = useCallback(async () => {
+    const id = ++requestId.current;
     setLoading(true);
     setError("");
     try {
-      setOrders(await api.orders());
+      const items = await api.orders();
+      if (id === requestId.current) setOrders(items);
     } catch {
-      setError("Unable to load orders. Please try again.");
+      if (id === requestId.current) setError("Unable to load orders. Please try again.");
     } finally {
-      setLoading(false);
+      if (id === requestId.current) setLoading(false);
     }
   }, []);
   useEffect(() => {
     void loadOrders();
+    return () => { requestId.current += 1; };
   }, [loadOrders]);
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -63,10 +67,11 @@ export function OrdersPage() {
         </header>
       </div>
       <div className="orders-scroll">
+        {orders.length > 0 && error && <p role="alert">{error}</p>}
         {pdfError && <p role="alert">{pdfError}</p>}
-        {loading ? (
+        {loading && !orders.length ? (
           <p role="status">Loading orders...</p>
-        ) : error ? (
+        ) : error && !orders.length ? (
           <div role="alert">
             <p>{error}</p>
             <button type="button" onClick={() => void loadOrders()}>

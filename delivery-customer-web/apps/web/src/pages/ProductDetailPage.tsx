@@ -18,32 +18,27 @@ function ProductDetails() {
   const { productId } = useParams();
   const navigate = useNavigate();
   const { cart, setQuantity } = useApp();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>(() => api.cachedProducts() || []);
+  const [loading, setLoading] = useState(() => !api.cachedProducts());
   const [loadError, setLoadError] = useState(false);
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, []);
   useEffect(() => {
     let active = true;
-    let timer: ReturnType<typeof setTimeout>;
-    // A short transition makes cached product switches visible too.
-    const transition = new Promise<void>((resolve) => {
-      timer = setTimeout(resolve, 180);
-    });
-    Promise.all([api.products(), transition])
-      .then(([items]) => {
+    api.products()
+      .then((items) => {
         if (active) setProducts(items);
       })
       .catch(() => {
-        if (active) setLoadError(true);
+        if (active && !api.cachedProducts()) setLoadError(true);
       })
       .finally(() => {
         if (active) setLoading(false);
       });
     return () => {
       active = false;
-      clearTimeout(timer);
+
     };
   }, []);
   const product = products.find((p) => p.id === Number(productId));
