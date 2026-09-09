@@ -1,10 +1,17 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { ArrowLeft, Eye, EyeOff, KeyRound, LockKeyhole, Phone } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { BrandLogo } from "../components/BrandLogo";
 import { useApp } from "../context/AppContext";
 
 export function LoginPage() {
+  const pending = useRef(false);
+  const [busy, setBusy] = useState(false);
+  const run = async (action: () => Promise<void>) => {
+    if (pending.current) return;
+    pending.current = true; setBusy(true);
+    try { await action(); } finally { pending.current = false; setBusy(false); }
+  };
   const location = useLocation();
   const [phoneNumber, setPhoneNumber] = useState(
     (location.state as { phoneNumber?: string } | null)?.phoneNumber ?? "",
@@ -18,20 +25,24 @@ export function LoginPage() {
 
   const submitPhone = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    await run(async () => {
     if (await loginCustomerWithPassword(phoneNumber.trim(), password)) {
       navigate("/", { replace: true, state: { showWelcome: true } });
     }
+    });
   };
 
   const requestOtp = async () => {
-    if (await sendOtp(phoneNumber.trim())) setOtpSent(true);
+    await run(async () => { if (await sendOtp(phoneNumber.trim())) setOtpSent(true); });
   };
 
   const confirmOtp = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    await run(async () => {
     if (await verifyOtp(phoneNumber.trim(), otp)) {
       navigate("/", { replace: true, state: { showWelcome: true } });
     }
+    });
   };
 
   return (
@@ -116,13 +127,13 @@ export function LoginPage() {
           </label>
         )}
 
-        <button className="auth-submit" type="submit">
-          {otpSent ? "Confirm & Sign In" : "Sign In"}
+        <button className="auth-submit" type="submit" disabled={busy}>
+          {busy ? "Please wait…" : otpSent ? "Confirm & Sign In" : "Sign In"}
         </button>
 
         {otpSent ? (
           <p className="auth-note">
-            Didn&apos;t receive it? <button type="button" className="auth-link-button" onClick={() => sendOtp(phoneNumber.trim())}>Resend OTP</button>
+            Didn&apos;t receive it? <button type="button" className="auth-link-button" disabled={busy} onClick={requestOtp}>Resend OTP</button>
           </p>
         ) : (
           <button className="otp-alternative" type="button" onClick={requestOtp}>

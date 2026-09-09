@@ -7,10 +7,12 @@ export function BrandLogo({
   size = 72,
   src,
   alt = "RENGAS logo",
+  loading = "eager",
 }: {
   size?: number;
   src?: string | null;
   alt?: string;
+  loading?: "eager" | "lazy";
 }) {
   const [failed, setFailed] = useState(false);
 
@@ -31,6 +33,8 @@ export function BrandLogo({
       width={size}
       height={size}
       alt={alt}
+      loading={loading}
+      decoding="async"
       onError={() => setFailed(true)}
     />
   );

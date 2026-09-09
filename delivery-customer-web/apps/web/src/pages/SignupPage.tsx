@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import {
   ArrowLeft,
   Building2,
@@ -15,6 +15,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 
 export function SignupPage() {
+  const pending = useRef(false);
+  const [busy, setBusy] = useState(false);
   const { signUp } = useApp();
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
@@ -33,6 +35,7 @@ export function SignupPage() {
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (pending.current) return;
     if (password.length < 8) {
       setError("Password must contain at least 8 characters.");
       return;
@@ -57,9 +60,11 @@ export function SignupPage() {
       address: address.trim(),
       password,
     };
-    const created = await signUp(profile);
-    if (created)
-      navigate("/login", { state: { phoneNumber: phoneNumber.trim() } });
+    pending.current = true; setBusy(true);
+    try {
+      const created = await signUp(profile);
+      if (created) navigate("/login", { state: { phoneNumber: phoneNumber.trim() } });
+    } finally { pending.current = false; setBusy(false); }
   };
 
   return (
@@ -168,7 +173,7 @@ export function SignupPage() {
           </p>
         )}
 
-        <button className="auth-submit" type="submit">
+        <button className="auth-submit" type="submit" disabled={busy}>
           Sign Up
         </button>
         <p className="auth-switch">

@@ -18,7 +18,9 @@ export type CustomerRegistration = Omit<CustomerProfile, "id"> & { password: str
 
 export function resolveApiAssetUrl(value?: string | null) {
   if (!value) return undefined;
-  const url = new URL(value, `${API_ORIGIN}/`);
+  let url: URL;
+  try { url = new URL(value, `${API_ORIGIN}/`); } catch { return undefined; }
+  if (!["http:", "https:"].includes(url.protocol)) return undefined;
   if (["localhost", "127.0.0.1"].includes(url.hostname)) {
     return `${API_ORIGIN}${url.pathname}${url.search}`;
   }
@@ -65,6 +67,7 @@ async function performRequest<T>(path: string, init?: RequestInit): Promise<T> {
 let productsRequest: Promise<Product[]> | undefined;
 let productsKey = "";
 let productsLoadedAt = 0;
+let orderSnapshot: { key: string; items: Order[] } | undefined;
 let productSnapshot: { key: string; items: Product[] } | undefined;
 
 export const api = {
@@ -121,9 +124,18 @@ export const api = {
     return productsRequest;
   },
   recentOrders: () => request<Pick<Order, "id" | "orderNo" | "date" | "status">[]>("/store/orders/recent"),
-  orders: () => request<Order[]>("/store/orders"),
+  cachedOrders: () => orderSnapshot?.key === (localStorage.getItem("rengas-token") || "") ? orderSnapshot.items : undefined,
+  orders: async () => {
+    const key = localStorage.getItem("rengas-token") || "";
+    const items = await request<Order[]>("/store/orders");
+    if (key === (localStorage.getItem("rengas-token") || "")) orderSnapshot = { key, items };
+    return items;
+  },
   createOrder: (
     customer: { name: string; companyName?: string; tinNumber: string; phoneNumber?: string; whatsappNumber?: string; address?: string },
     items: { productId: number; quantity: number }[],
-  ) => request<Order>("/store/orders", { method: "POST", body: JSON.stringify({ customer, items }) }),
+  ) => request<Order>("/store/orders", { method: "POST", body: JSON.stringify({ customer, items }) }).then(order => {
+    orderSnapshot = undefined;
+    return order;
+  }),
 };

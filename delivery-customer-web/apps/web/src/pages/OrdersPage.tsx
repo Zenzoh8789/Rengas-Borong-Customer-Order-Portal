@@ -13,10 +13,10 @@ const stages = ["Accepted", "Packed", "Shipped", "Delivered"];
 
 export function OrdersPage() {
   const requestId = useRef(0);
-  const [orders, setOrders] = useState<DisplayOrder[]>([]);
+  const [orders, setOrders] = useState<DisplayOrder[]>(() => api.cachedOrders() || []);
   const [pdfError, setPdfError] = useState("");
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !api.cachedOrders());
   const [error, setError] = useState("");
   const loadOrders = useCallback(async () => {
     const id = ++requestId.current;

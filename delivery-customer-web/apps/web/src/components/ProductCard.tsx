@@ -34,6 +34,7 @@ export function ProductCard({ product }: { product: Product }) {
         >
           <BrandLogo
             size={116}
+            loading="lazy"
             src={product.imageUrl}
             alt={product.name}
           />

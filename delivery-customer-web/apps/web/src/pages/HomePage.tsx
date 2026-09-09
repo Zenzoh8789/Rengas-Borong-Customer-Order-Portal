@@ -1,5 +1,5 @@
 import { CategoryIcon } from "../components/CategoryIcon";
-import { useEffect, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ProductCard } from "../components/ProductCard";
 import { SearchBox } from "../components/AppShell";
@@ -32,13 +32,24 @@ export function HomePage() {
     ],
     [products],
   );
+  const deferredSearch = useDeferredValue(search);
+  const grouped = useMemo(() => {
+    const result = new Map<string, Product[]>();
+    for (const product of products) {
+      const name = categoryName(product.category);
+      const group = result.get(name) || [];
+      if (group.length < 3) group.push(product);
+      result.set(name, group);
+    }
+    return result;
+  }, [products]);
   const requested = params.get("category") || "All";
   const matching = products.filter(
     (p) =>
       (requested === "All" || categoryName(p.category) === requested) &&
       `${p.name} ${p.code} ${p.subtitle || ""}`
         .toLowerCase()
-        .includes(search.toLowerCase()),
+        .includes(deferredSearch.toLowerCase()),
   );
   const sections =
     requested !== "All" || search
@@ -54,9 +65,7 @@ export function HomePage() {
             (name) =>
               [
                 name,
-                products
-                  .filter((p) => categoryName(p.category) === name)
-                  .slice(0, 3),
+                grouped.get(name) || [],
               ] as const,
           );
   const open = (name: string) =>
