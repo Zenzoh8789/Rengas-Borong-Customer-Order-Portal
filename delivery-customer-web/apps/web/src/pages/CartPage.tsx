@@ -153,7 +153,7 @@ export function CartPage() {
                 />
                 <div className="cart-line-info">
                   <h2>{item.product.name}</h2>
-                  <p>{item.uom.pack || item.uom.name}{item.product.code && ` · ${item.product.code}`}</p>
+                  <p>{item.uom.pack || item.uom.name}</p>
                 </div>
                   <div className="cart-line-price">
                     <strong>RM {Number(item.uom.price).toFixed(2)}</strong>
