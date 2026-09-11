@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { api, type CustomerProfile, type CustomerRegistration } from "../services/api";
-import type { CartItem, Product, ProductUom } from "../types";
+import { createContext,useContext,useEffect,useMemo,useState,type ReactNode } from "react";
+import { api,type CustomerProfile,type CustomerRegistration } from "../services/api";
+import type { CartItem,Product,ProductUom } from "../types";
 
 type Notice = { type: "success" | "error" | "info"; message: string };
 type AppState = {

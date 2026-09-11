@@ -1,33 +1,39 @@
 # RENGAS Customer Portal
 
-Mobile-first React customer ordering portal. Product, category, image, UOM, price, login and order data come from the RENGAS admin NestJS API.
+React customer ordering website, backed by the Rengas Admin API.
 
-## Local development
+## Install and build
 
-1. Start the admin backend at `http://localhost:3000`.
-2. Copy `.env.example` to `.env` if the API URL is different.
-3. Run `npm install`.
-4. Run `npm run dev`.
-5. Open `http://localhost:5173`.
+Use Node.js 22.12 or newer (Node 24 is recommended). From this directory:
 
-## Docker web build
+```
+npm ci
+npm run dev
+```
 
-Run `docker compose up --build -d`, then open `http://localhost:5173`.
+For a production build, set VITE_API_URL in the build environment to the real admin API URL before running npm run build. For this deployment the API base is https://rengatrading.in/api. The default is http://localhost:3000/api for local development only.
 
-For production, change `VITE_API_URL` in `docker-compose.yml` to the deployed admin API URL before rebuilding.
+PowerShell:
 
-The admin API must provide:
+```
+$env:VITE_API_URL = 'https://rengatrading.in/api'
+npm run build
+```
 
-- `POST /api/auth/login`
-- `GET /api/store/products`
-- `GET /api/store/orders`
-- `POST /api/store/orders`
-- `/uploads/*` static product images
+Upload the contents of apps/web/dist, including .htaccess, to the customer site's document root. Nginx users should use the fallback route in docker/nginx.conf. Environment files are intentionally excluded; set values through your terminal or hosting configuration.
 
-Customer login sends the `CUSTOMER` role. The admin backend `Role` enum and MySQL `users.role` enum must therefore include `CUSTOMER`.
+## Catalog fix
 
-## Customer sign-up and OTP
+Deploy the accompanying rengas-admin backend first. GET /api/store/products now returns one entry per database product ID/SKU, preserving full pack descriptions, prices, images and category assignments. Cards show product codes, and category labels match admin names. Category counts and search operate on every SKU rather than one representative of a name group.
 
-The web app includes a customer registration flow with Full Name, Business/Shop Name, Phone Number, and Shop Location/Address. The saved business and address are displayed in the application header.
+The homepage previews three products per category. Opening a category displays all its products. This preview is intentional.
 
-The supplied backend does not currently expose sign-up or SMS OTP endpoints, so local development uses OTP `123456`. Before production, replace the development OTP methods in `AppContext.tsx` with backend calls that send and verify expiring, rate-limited OTP codes. Do not use the development OTP in production.
+Existing category assignments come from the database. Correct them in Admin using the authoritative product master list; this release does not guess or overwrite them. Empty categories are not listed in the customer portal.
+
+## Authentication and orders
+
+Customer registration, password login and OTP use the admin API. Configure the backend's existing OTP delivery settings as appropriate for the deployment. Cart lines submit the selected SKU's productId; the backend supplies the authoritative price.
+
+## Package contents
+
+Required source, dependency lockfile, styles, images and server configuration are retained. node_modules, old dist builds, caches, logs, old step-by-step change notes and all .env* files are excluded. Install dependencies and build again for your target host.

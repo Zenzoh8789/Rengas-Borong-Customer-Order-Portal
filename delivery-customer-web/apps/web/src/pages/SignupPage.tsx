@@ -1,17 +1,17 @@
-import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import {
-  ArrowLeft,
-  Building2,
-  Eye,
-  EyeOff,
-  FileText,
-  LockKeyhole,
-  Mail,
-  MapPin,
-  Phone,
-  UserRound,
+ArrowLeft,
+Building2,
+Eye,
+EyeOff,
+FileText,
+LockKeyhole,
+Mail,
+MapPin,
+Phone,
+UserRound,
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useRef,useState,type FormEvent,type ReactNode } from "react";
+import { Link,useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 
 export function SignupPage() {

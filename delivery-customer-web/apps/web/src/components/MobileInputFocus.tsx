@@ -66,19 +66,29 @@ export function MobileInputFocus() {
     const position = () => {
       const field = getField();
 
-      if (!field) {
+      if (!field || !keyboardOpen) {
         clear();
         return;
       }
 
-      const next = field.closest<HTMLElement>(
-        ".auth-screen, .screen-content",
-      );
+      // Find the nearest container configured for vertical scrolling.
+      let next: HTMLElement | null = field.parentElement;
+
+      while (next) {
+        const { overflowY } = window.getComputedStyle(next);
+
+        if (/^(auto|scroll|overlay)$/.test(overflowY)) {
+          break;
+        }
+
+        next = next.parentElement;
+      }
 
       if (!next) {
-        clear();
-        return;
+        next = document.scrollingElement as HTMLElement | null;
       }
+
+      if (!next) return;
 
       if (container !== next) {
         clear();
@@ -89,19 +99,42 @@ export function MobileInputFocus() {
       container.classList.add("mobile-input-active");
 
       const viewportTop = viewport?.offsetTop ?? 0;
-      const viewportHeight = viewport?.height ?? window.innerHeight;
-      const rect = container.getBoundingClientRect();
+      const viewportBottom =
+        viewportTop + (viewport?.height ?? window.innerHeight);
 
-      const top = Math.max(rect.top, viewportTop);
-      const bottom = Math.min(
-        rect.bottom,
-        viewportTop + viewportHeight,
-      );
-      const available = Math.max(0, bottom - top);
-      const target = top + Math.min(80, available * 0.2);
-      const delta = field.getBoundingClientRect().top - target;
+      const isDocument = container === document.scrollingElement;
+      const containerRect = container.getBoundingClientRect();
 
-      if (Math.abs(delta) > 4) {
+      const visibleTop = isDocument
+        ? viewportTop
+        : Math.max(viewportTop, containerRect.top + container.clientTop);
+
+      const visibleBottom = isDocument
+        ? viewportBottom
+        : Math.min(
+            viewportBottom,
+            containerRect.top + container.clientTop + container.clientHeight,
+          );
+
+      const gap = 16;
+      const fieldRect = field.getBoundingClientRect();
+      const availableHeight = visibleBottom - visibleTop - gap * 2;
+
+      if (availableHeight <= 0) return;
+
+      let delta = 0;
+
+      if (
+        fieldRect.top < visibleTop + gap ||
+        fieldRect.height > availableHeight
+      ) {
+        delta = fieldRect.top - (visibleTop + gap);
+      } else if (fieldRect.bottom > visibleBottom - gap) {
+        delta = fieldRect.bottom - (visibleBottom - gap);
+      }
+
+      // Leave already-visible inputs in place.
+      if (Math.abs(delta) > 1) {
         container.scrollBy({
           top: delta,
           behavior: "instant",
@@ -195,10 +228,7 @@ export function MobileInputFocus() {
       document.removeEventListener("focusout", schedule);
       viewport?.removeEventListener("resize", handleResize);
       window.removeEventListener("resize", handleResize);
-      window.removeEventListener(
-        "orientationchange",
-        handleOrientation,
-      );
+      window.removeEventListener("orientationchange", handleOrientation);
 
       clearTimeout(timer);
       clear();

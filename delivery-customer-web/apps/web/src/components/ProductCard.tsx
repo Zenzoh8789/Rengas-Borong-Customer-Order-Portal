@@ -1,7 +1,7 @@
-import { Plus, ShoppingCart } from "lucide-react";
+import { Plus,ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
-import type { Product } from "../types";
 import { useApp } from "../context/AppContext";
+import type { Product } from "../types";
 import { BrandLogo } from "./BrandLogo";
 
 export function ProductCard({ product }: { product: Product }) {
@@ -69,6 +69,8 @@ export function ProductCard({ product }: { product: Product }) {
         </Link>
       </h3>
 
+      {/* <small className="store-product-description">{product.code}</small> */}
+
       {product.description && (
         <small className="store-product-description">
           {product.description}
@@ -77,11 +79,12 @@ export function ProductCard({ product }: { product: Product }) {
 
       <div className="store-product-price">
         <span>
-          <b>RM {Number(uom?.price || 0).toFixed(2)}</b>
-          <small>
+           <small>
             {" "}
-            / {uom?.name || uom?.pack || "unit"}
+            {uom?.name || uom?.pack || "unit"}
           </small>
+          <b>RM {Number(uom?.price || 0).toFixed(2)}</b>
+         
         </span>
       </div>
     </article>

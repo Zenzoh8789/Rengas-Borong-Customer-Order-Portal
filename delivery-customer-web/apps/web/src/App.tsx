@@ -1,5 +1,5 @@
-import { lazy, Suspense, useEffect, useState } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { lazy,Suspense,useEffect,useState } from "react";
+import { Navigate,Route,Routes } from "react-router-dom";
 
 import { BrandLogo } from "./components/BrandLogo";
 

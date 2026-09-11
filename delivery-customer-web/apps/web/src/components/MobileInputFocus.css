@@ -4,8 +4,7 @@
     font-size: 16px;
   }
 
-  .auth-screen.mobile-input-active,
-  .screen-content.mobile-input-active {
+  .mobile-input-active {
     padding-bottom: 75vh;
     scroll-behavior: auto;
   }

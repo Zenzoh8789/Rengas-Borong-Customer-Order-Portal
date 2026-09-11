@@ -1,9 +1,9 @@
-import { ChevronDown, Download, RefreshCw } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChevronDown,Download,RefreshCw } from "lucide-react";
+import { useCallback,useEffect,useMemo,useRef,useState } from "react";
 import { SearchBox } from "../components/AppShell";
 
 import { api } from "../services/api";
-import type { Order, OrderLine } from "../types";
+import type { Order,OrderLine } from "../types";
 
 // The order API must return items to display purchased products.
 interface DisplayOrder extends Order {

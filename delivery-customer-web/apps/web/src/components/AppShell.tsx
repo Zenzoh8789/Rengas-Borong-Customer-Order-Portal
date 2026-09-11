@@ -1,19 +1,19 @@
-import { HeaderStatus } from "./HeaderStatus";
 import {
-  Grid3X3,
-  History,
-  Home,
-  Menu,
-  Search,
-  ShoppingCart,
-  X,
-  LogOut,
-  UserRound,
+Grid3X3,
+History,
+Home,
+LogOut,
+Menu,
+Search,
+ShoppingCart,
+UserRound,
+X,
 } from "lucide-react";
-import { NavLink, useLocation } from "react-router-dom";
-import { useState, type ReactNode } from "react";
+import { useState,type ReactNode } from "react";
+import { NavLink,useLocation } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import { BrandLogo } from "./BrandLogo";
+import { HeaderStatus } from "./HeaderStatus";
 
 export function SearchBox({
   value,

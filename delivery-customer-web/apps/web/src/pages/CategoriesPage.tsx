@@ -1,10 +1,10 @@
-import { CategoryIcon } from "../components/CategoryIcon";
 import { ChevronRight } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect,useMemo,useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SearchBox } from "../components/AppShell";
+import { CategoryIcon } from "../components/CategoryIcon";
 import { api } from "../services/api";
-import type { Product, ProductCategory } from "../types";
+import type { Product,ProductCategory } from "../types";
 const categoryName = (c: ProductCategory) =>
   typeof c === "string" ? c : c?.name || "Uncategorised";
 export function CategoriesPage() {
@@ -57,7 +57,7 @@ export function CategoriesPage() {
               <CategoryIcon name={name} />
             </span>
             <span className="category-card-content">
-              <b>{name.replace(/\s+products$/i, "")}</b>
+              <b>{name}</b>
               <small>
                 {count} {count === 1 ? "Product" : "Products"}
               </small>

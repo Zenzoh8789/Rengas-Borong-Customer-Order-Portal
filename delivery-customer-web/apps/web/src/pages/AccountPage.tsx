@@ -1,19 +1,17 @@
-import { useState, type FormEvent } from "react";
 import {
-  ArrowLeft,
-  ChevronRight,
-  CircleHelp,
-  LogOut,
-  Phone,
-  UserRound,
+ArrowLeft,
+ChevronRight,
+CircleHelp,
+LogOut,
+Mail,
+Phone,
+UserRound,
 } from "lucide-react";
+import { useState,type FormEvent } from "react";
 import { useApp } from "../context/AppContext";
 import type { CustomerProfile } from "../services/api";
 
 // Add your real support number here later, including the country code.
-const SUPPORT_PHONE = "";
-const SUPPORT_HOURS = "";
-const SUPPORT_TEL = SUPPORT_PHONE.replace(/[^+\d]/g, "");
 type ProfileDetails = Omit<CustomerProfile, "id">;
 const fields: {
   key: keyof ProfileDetails;
@@ -21,18 +19,22 @@ const fields: {
   type?: string;
   required?: boolean;
 }[] = [
-  { key: "businessName", label: "Business / Company / Shop Name", required: true },
-  { key: "fullName", label: "Full name", required: true },
-  { key: "tinNumber", label: "TIN number", required: true },
-  { key: "phoneNumber", label: "Phone number", type: "tel", required: true },
+  {
+    key: "businessName",
+    label: "Business / Company / Shop Name",
+    required: true,
+  },
+  { key: "fullName", label: "Full Name", required: true },
+  { key: "tinNumber", label: "TIN Number", required: true },
+  { key: "phoneNumber", label: "Phone Number", type: "tel", required: true },
   {
     key: "whatsappNumber",
-    label: "WhatsApp number",
+    label: "WhatsApp Number",
     type: "tel",
     required: true,
   },
-  { key: "email", label: "Email", type: "email" },
-  { key: "address", label: "Delivery address", required: true },
+  { key: "email", label: "E-mail", type: "email", required: true},
+  { key: "address", label: "Delivery Address", required: true },
 ];
 
 export function AccountPage() {
@@ -78,7 +80,7 @@ export function AccountPage() {
   };
 
   return (
-    <div className="account-page account-redesign">
+    <div className="account-page  account-redesign">
       {panel === "menu" ? (
         <nav aria-label="Account menu" className="account-simple-menu">
           <button type="button" onClick={openProfile}>
@@ -107,9 +109,10 @@ export function AccountPage() {
               setMessage("");
             }}
           >
-            <ArrowLeft /> Back
+            <ArrowLeft />
+            {panel === "profile" ? "My Profile" : "Help Center"}
           </button>
-          <h1>{panel === "profile" ? "My Profile" : "Help Center"}</h1>
+
           {panel === "profile" ? (
             draft ? (
               <form onSubmit={save}>
@@ -155,22 +158,36 @@ export function AccountPage() {
               <p>Your profile is unavailable. Please sign in again.</p>
             )
           ) : (
-            <div className="account-help">
+            <div className="account-help-simple">
+              <h2>Contact support</h2>
               <p>
                 For help with an order, delivery, or account details, contact
-                our support team : <br/> +601-2536-7621 or email to info@rengas.my
+                our support team{" "}
               </p>
-              {SUPPORT_PHONE ? (
-                <a className="account-phone" href={`tel:${SUPPORT_TEL}`}>
-                  <Phone />
-                  {SUPPORT_PHONE}
-                </a>
-              ) : (
-                <p className="account-note">
-                  Support hours: Monday to saturday | 9:00AM - 6:00PM
-                </p>
-              )}
-              {SUPPORT_HOURS && <p>Support hours: {SUPPORT_HOURS}</p>}
+
+              <a href="tel:+60125367621">
+                <Phone aria-hidden="true" />
+                <span>
+                  <small>Phone</small>
+                  <strong>+601-2536-7621</strong>
+                </span>
+                <ChevronRight aria-hidden="true" />
+              </a>
+
+              <a href="mailto:info@rengas.my">
+                <Mail aria-hidden="true" />
+                <span>
+                  <small>E-mail</small>
+                  <strong>info@rengas.my</strong>
+                </span>
+                <ChevronRight aria-hidden="true" />
+              </a>
+
+              <p className="help-time">
+                <strong>Support hours</strong>
+                <br />
+                Monday to Saturday · 9:00 AM – 6:00 PM
+              </p>
             </div>
           )}
         </section>

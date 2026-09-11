@@ -35,6 +35,23 @@ body,
 }
 
 .home-page,
+.home-controls {
+  min-width: 0;
+}
+
+.category-tiles {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.category-tiles > button {
+  flex-shrink: 0;
+}
+
+.home-page,
 .categories-page {
   width: 100%;
   height: 100%;

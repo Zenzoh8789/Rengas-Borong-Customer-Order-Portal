@@ -1,5 +1,5 @@
 import { jsPDF } from "jspdf";
-import type { Order, OrderLine, Product } from "../types";
+import type { Order,OrderLine,Product } from "../types";
 
 type PdfLine = OrderLine & {
   uom?: string | { name?: string; pack?: string };
