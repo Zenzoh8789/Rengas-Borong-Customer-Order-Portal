@@ -494,8 +494,9 @@ html
 }
 /* A product title uses the product-name scale, even on the details page. */
 html body .screen-content .detail-info h1 {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
 }
 html
   body

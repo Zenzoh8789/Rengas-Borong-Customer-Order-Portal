@@ -118,6 +118,18 @@ body,
   box-shadow: none;
 }
 
+.product-load-sentinel {
+  width: 1px;
+  height: 1px;
+  min-width: 1px;
+  min-height: 1px;
+  flex: 0 0 1px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  pointer-events: none;
+}
+
 .categories-controls {
   padding: 17px 0 12px;
 }
@@ -251,7 +263,30 @@ body,
   height: 23px;
   color: #111;
 }
+@media (max-width: 1024px) {
+  .auth-screen {
+    box-sizing: border-box;
+    height: 100dvh;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 24px 16px;
+  }
 
+  .auth-screen .auth-card {
+    flex-shrink: 0;
+    margin: auto;
+    max-width: 100%;
+  }
+
+  .auth-screen :is(input, textarea) {
+    font-size: 16px;
+    scroll-margin-block: 24px;
+  }
+}
 @media (max-width: 480px) {
   .phone-shell {
     width: 100%;

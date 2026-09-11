@@ -1,40 +1,82 @@
 import { ChevronRight } from "lucide-react";
-import { useEffect,useMemo,useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SearchBox } from "../components/AppShell";
 import { CategoryIcon } from "../components/CategoryIcon";
-import { api } from "../services/api";
-import type { Product,ProductCategory } from "../types";
-const categoryName = (c: ProductCategory) =>
-  typeof c === "string" ? c : c?.name || "Uncategorised";
+import { api, type StoreCategory } from "../services/api";
+import type { Product, ProductCategory } from "../types";
+
+const categoryName = (category: ProductCategory): string =>
+  typeof category === "string"
+    ? category
+    : category?.name || "Uncategorised";
+
 export function CategoriesPage() {
-  const [products, setProducts] = useState<Product[]>(() => api.cachedProducts() || []);
-  const [loading, setLoading] = useState(() => !api.cachedProducts());
-  const [error, setError] = useState(false);
+  const navigate = useNavigate();
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const [allCategories, setAllCategories] = useState<StoreCategory[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [retry, setRetry] = useState(0);
   const [search, setSearch] = useState("");
-  const navigate = useNavigate();
+
   useEffect(() => {
     let active = true;
-    setLoading(!api.cachedProducts()); setError(false);
-    api.products().then(items => { if (active) setProducts(items); })
-      .catch(() => { if (active) setError(true); })
-      .finally(() => { if (active) setLoading(false); });
-    return () => { active = false; };
+
+    setLoading(true);
+    setError(null);
+
+    Promise.all([api.categories(), api.products()])
+      .then(([categoryItems, productItems]) => {
+        if (!active) return;
+
+        setAllCategories(categoryItems);
+        setProducts(productItems);
+      })
+      .catch((error: unknown) => {
+        if (!active) return;
+
+        setError(
+          error instanceof Error
+            ? error.message
+            : "Unable to load categories. Please try again.",
+        );
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, [retry]);
-  const categories = useMemo(
-    () =>
-      Array.from(
-        products.reduce((m, p) => {
-          const n = categoryName(p.category);
-          m.set(n, (m.get(n) || 0) + 1);
-          return m;
-        }, new Map<string, number>()),
+
+  const productCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+
+    for (const product of products) {
+      const name = categoryName(product.category);
+      counts.set(name, (counts.get(name) ?? 0) + 1);
+    }
+
+    return counts;
+  }, [products]);
+
+  const categories = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    return allCategories
+      .filter((category) =>
+        category.name.toLowerCase().includes(query),
       )
-        .filter(([n]) => n.toLowerCase().includes(search.toLowerCase()))
-        .sort(([a], [b]) => a.localeCompare(b)),
-    [products, search],
-  );
+      .map((category) => ({
+        ...category,
+        count: productCounts.get(category.name) ?? 0,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [allCategories, productCounts, search]);
+
   return (
     <div className="categories-page">
       <div className="categories-controls">
@@ -44,29 +86,57 @@ export function CategoriesPage() {
           placeholder="Search categories..."
         />
       </div>
+
       <div className="categories-list category-list-modern">
         {loading && <p role="status">Loading…</p>}
-        {error && <div role="alert">Unable to load. <button onClick={() => setRetry(value => value + 1)}>Try again</button></div>}
-        {categories.map(([name, count]) => (
-          <button
-            className="category-card"
-            key={name}
-            onClick={() => navigate(`/?category=${encodeURIComponent(name)}`)}
-          >
-            <span className="category-list-icon">
-              <CategoryIcon name={name} />
-            </span>
-            <span className="category-card-content">
-              <b>{name}</b>
-              <small>
-                {count} {count === 1 ? "Product" : "Products"}
-              </small>
-            </span>
-            <ChevronRight className="category-chevron" />
-          </button>
-        ))}
-        {!loading && !error && !categories.length && (
-          <div className="empty">No categories found.</div>
+
+        {!loading && error && (
+          <div role="alert">
+            <p>{error}</p>
+
+            <button
+              type="button"
+              onClick={() => setRetry((value) => value + 1)}
+            >
+              Try again
+            </button>
+          </div>
+        )}
+
+        {!loading &&
+          !error &&
+          categories.map(({ id, name, count }) => (
+            <button
+              type="button"
+              className="category-card"
+              key={id}
+              onClick={() =>
+                navigate(`/?category=${encodeURIComponent(name)}`)
+              }
+            >
+              <span className="category-list-icon">
+                <CategoryIcon name={name} />
+              </span>
+
+              <span className="category-card-content">
+                <b>{name}</b>
+
+                <small>
+                  {count} {count === 1 ? "Product" : "Products"}
+                </small>
+              </span>
+
+              <ChevronRight
+                className="category-chevron"
+                aria-hidden="true"
+              />
+            </button>
+          ))}
+
+        {!loading && !error && categories.length === 0 && (
+          <div className="empty" role="status">
+            No categories found.
+          </div>
         )}
       </div>
     </div>
