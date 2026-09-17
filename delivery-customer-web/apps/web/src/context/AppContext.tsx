@@ -17,6 +17,9 @@ type AppState = {
   signUp: (customer: CustomerRegistration) => Promise<boolean>;
   sendOtp: (phoneNumber: string) => Promise<boolean>;
   verifyOtp: (phoneNumber: string, otp: string) => Promise<boolean>;
+  requestPasswordReset: (phoneNumber: string) => Promise<{ developmentOtp?: string } | null>;
+  verifyPasswordResetOtp: (phoneNumber: string, otp: string) => Promise<string | null>;
+  resetPassword: (resetToken: string, newPassword: string) => Promise<boolean>;
   logout: () => void;
   notify: (message: string, type?: Notice["type"]) => void;
   setQuantity: (product: Product, uom: ProductUom, quantity: number) => void;
@@ -166,6 +169,39 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const requestPasswordReset = async (phoneNumber: string) => {
+    try {
+      const result = await api.requestCustomerPasswordReset(phoneNumber.trim());
+      notify(result.message, "info");
+      return result;
+    } catch (error) {
+      notify(errorMessage(error, "Unable to send password reset OTP."), "error");
+      return null;
+    }
+  };
+
+  const verifyPasswordResetOtp = async (phoneNumber: string, otp: string) => {
+    try {
+      const result = await api.verifyCustomerPasswordResetOtp(phoneNumber.trim(), otp);
+      notify("OTP verified. You can now create a new password.", "success");
+      return result.resetToken;
+    } catch (error) {
+      notify(errorMessage(error, "The password reset OTP is incorrect or expired."), "error");
+      return null;
+    }
+  };
+
+  const resetPassword = async (resetToken: string, newPassword: string) => {
+    try {
+      await api.resetCustomerPassword(resetToken, newPassword);
+      notify("Password changed successfully. Please sign in with your new password.", "success");
+      return true;
+    } catch (error) {
+      notify(errorMessage(error, "Unable to reset your password."), "error");
+      return false;
+    }
+  };
+
   const logout = () => {
     sessionStorage.removeItem("rengas-auth");
     localStorage.removeItem("rengas-token");
@@ -193,7 +229,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const value = useMemo(() => ({
-    authenticated, authLoading, authError, retryAuth: () => setAuthAttempt(value => value + 1), profile, cart, refreshProfile, updateProfile, login, loginCustomerWithPassword, signUp, sendOtp, verifyOtp, logout, notify, setQuantity,
+    authenticated, authLoading, authError, retryAuth: () => setAuthAttempt(value => value + 1), profile, cart, refreshProfile, updateProfile, login, loginCustomerWithPassword, signUp, sendOtp, verifyOtp, requestPasswordReset, verifyPasswordResetOtp, resetPassword, logout, notify, setQuantity,
     clearCart: () => setCart([]),
   }), [authenticated, authLoading, authError, cart, profile]);
 

@@ -165,6 +165,31 @@ export const api = {
       body: JSON.stringify({ phoneNumber }),
     }),
 
+  requestCustomerPasswordReset: (phoneNumber: string) =>
+    request<{
+      message: string;
+      developmentOtp?: string;
+    }>("/auth/customer/forgot-password", {
+      method: "POST",
+      body: JSON.stringify({ phoneNumber }),
+    }),
+
+  verifyCustomerPasswordResetOtp: (phoneNumber: string, otp: string) =>
+    request<{
+      message: string;
+      resetToken: string;
+      expiresInSeconds: number;
+    }>("/auth/customer/verify-reset-otp", {
+      method: "POST",
+      body: JSON.stringify({ phoneNumber, otp }),
+    }),
+
+  resetCustomerPassword: (resetToken: string, newPassword: string) =>
+    request<{ message: string }>("/auth/customer/reset-password", {
+      method: "POST",
+      body: JSON.stringify({ resetToken, newPassword }),
+    }),
+
   verifyCustomerOtp: (phoneNumber: string, otp: string) =>
     request<{
       accessToken: string;
