@@ -160,6 +160,7 @@ export const api = {
     request<{
       message: string;
       developmentOtp?: string;
+      delivery?: "email" | "sms" | "development";
     }>("/auth/customer/send-otp", {
       method: "POST",
       body: JSON.stringify({ phoneNumber }),
@@ -169,6 +170,7 @@ export const api = {
     request<{
       message: string;
       developmentOtp?: string;
+      delivery?: "email" | "sms" | "development";
     }>("/auth/customer/forgot-password", {
       method: "POST",
       body: JSON.stringify({ phoneNumber }),

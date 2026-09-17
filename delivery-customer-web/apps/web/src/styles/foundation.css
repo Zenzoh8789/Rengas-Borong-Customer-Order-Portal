@@ -511,8 +511,8 @@ html
     .header-order-list li,
     .empty
   ) {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 400;
 }
 html body :is(.bottom-nav a, .bottom-nav a.active) {
   font-size: 14px;
