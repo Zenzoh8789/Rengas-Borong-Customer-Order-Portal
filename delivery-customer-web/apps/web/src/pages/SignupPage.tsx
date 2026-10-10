@@ -163,8 +163,21 @@ export function SignupPage() {
           />
           <span>
             By creating an account, I confirm that I have read and agree to the{" "}
-            <Link to="/terms">Terms and Conditions</Link> and{" "}
-            <Link to="/privacy">Privacy Policy</Link>.
+            <a
+              href="https://rengas.my/tc.html"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Terms and Conditions
+            </a>{" "}
+            and{" "}
+            <a
+              href="https://rengas.my/tc.html"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Privacy Policy
+            </a>.
           </span>
         </label>
         {error && (
