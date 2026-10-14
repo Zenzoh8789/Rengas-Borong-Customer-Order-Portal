@@ -293,8 +293,18 @@ export function HomePage() {
         if (active) setLoading(false);
       });
 
+    const refreshProducts = () => {
+      if (document.hidden) return;
+      void api.products(true).then(items => { if (active) setProducts(items); }).catch(() => { /* Keep the last catalogue until retry. */ });
+    };
+    const refreshTimer = window.setInterval(refreshProducts, 15000);
+    window.addEventListener("focus", refreshProducts);
+    document.addEventListener("visibilitychange", refreshProducts);
     return () => {
       active = false;
+      window.clearInterval(refreshTimer);
+      window.removeEventListener("focus", refreshProducts);
+      document.removeEventListener("visibilitychange", refreshProducts);
     };
   }, [retry]);
 

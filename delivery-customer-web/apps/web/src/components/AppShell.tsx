@@ -38,7 +38,7 @@ export function SearchBox({
 }
 export function AppShell({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { cart, logout, profile } = useApp();
+  const { cart, logout, profile, authenticated } = useApp();
   const { pathname } = useLocation();
   const pageClass = pathname === "/"
     ? "page-home"
@@ -108,9 +108,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                 {label}
               </NavLink>
             ))}
-            <button className="logout" onClick={logout}>
+            {authenticated && <button className="logout" onClick={() => { setMenuOpen(false); logout(); }}>
               <LogOut /> Logout
-            </button>
+            </button>}
           </aside>
         </>
       )}

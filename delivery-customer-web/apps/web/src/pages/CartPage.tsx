@@ -44,7 +44,7 @@ function playOrderSuccessSound() {
 
 export function CartPage() {
   const navigate = useNavigate();
-  const { cart, setQuantity, clearCart, notify } = useApp();
+  const { cart, setQuantity, clearCart, notify, authenticated } = useApp();
   const [submitting, setSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const submittingRef = useRef(false);
@@ -62,6 +62,10 @@ export function CartPage() {
 
   const submit = async () => {
     if (submittingRef.current || !cart.length) return;
+    if (!authenticated) {
+      navigate("/login", { state: { returnTo: "/cart" } });
+      return;
+    }
     submittingRef.current = true;
     setSubmitting(true);
     try {
@@ -73,6 +77,7 @@ export function CartPage() {
         !result.customer
       ) {
         notify("Please sign in again to submit your order.", "error");
+        navigate("/login", { state: { returnTo: "/cart" } });
         return;
       }
       const profile = result.customer;

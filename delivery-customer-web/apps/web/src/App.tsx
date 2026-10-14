@@ -1,5 +1,5 @@
-import { lazy,Suspense,useEffect,useState } from "react";
-import { Navigate,Route,Routes } from "react-router-dom";
+import { lazy,Suspense,useEffect,useState,type ReactNode } from "react";
+import { Navigate,Route,Routes,useLocation } from "react-router-dom";
 
 import { BrandLogo } from "./components/BrandLogo";
 
@@ -49,13 +49,16 @@ const AccountPage = lazy(() =>
   }))
 );
 
-function Protected() {
+function RequireCustomer({ children }: { children: ReactNode }) {
   const { authenticated } = useApp();
-
+  const location = useLocation();
   if (!authenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace state={{ returnTo: location.pathname }} />;
   }
+  return <>{children}</>;
+}
 
+function Storefront() {
   return (
     <AppShell>
       <Suspense fallback={<p role="status">Loading page…</p>}>
@@ -69,8 +72,8 @@ function Protected() {
           />
 
           <Route path="/cart" element={<CartPage />} />
-          <Route path="/orders" element={<OrdersPage />} />
-          <Route path="/account" element={<AccountPage />} />
+          <Route path="/orders" element={<RequireCustomer><OrdersPage /></RequireCustomer>} />
+          <Route path="/account" element={<RequireCustomer><AccountPage /></RequireCustomer>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
@@ -110,7 +113,7 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
-      <Route path="/*" element={<Protected />} />
+      <Route path="/*" element={<Storefront />} />
     </Routes>
   );
 }

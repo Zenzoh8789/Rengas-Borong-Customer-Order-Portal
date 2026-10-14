@@ -3,6 +3,8 @@ import { useRef, useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { BrandLogo } from "../components/BrandLogo";
 import { useApp } from "../context/AppContext";
+import { CountryCodePicker } from "../components/CountryCodePicker";
+import { parsePhoneNumberFromString, type CountryCode } from "libphonenumber-js";
 
 type AuthMode = "login" | "otp" | "forgot-phone" | "forgot-otp" | "forgot-password";
 
@@ -17,9 +19,17 @@ export function LoginPage() {
   };
 
   const location = useLocation();
+  const requestedReturn = (location.state as { returnTo?: string } | null)?.returnTo;
+  const returnTo = ["/cart", "/orders", "/account"].includes(requestedReturn ?? "") ? requestedReturn! : "/";
   const [phoneNumber, setPhoneNumber] = useState(
     (location.state as { phoneNumber?: string } | null)?.phoneNumber ?? "",
   );
+  const [country, setCountry] = useState<CountryCode>(() =>
+    parsePhoneNumberFromString((location.state as { phoneNumber?: string } | null)?.phoneNumber ?? "")?.country ?? "MY");
+  const internationalPhone = () => {
+    const parsed = parsePhoneNumberFromString(phoneNumber.trim(), country);
+    return parsed?.number ?? phoneNumber.trim();
+  };
   const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -46,30 +56,30 @@ export function LoginPage() {
   const submitLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     await run(async () => {
-      if (await loginCustomerWithPassword(phoneNumber.trim(), password)) {
-        navigate("/", { replace: true, state: { showWelcome: true } });
+      if (await loginCustomerWithPassword(internationalPhone(), password)) {
+        navigate(returnTo, { replace: true, state: { showWelcome: true } });
       }
     });
   };
 
   const requestLoginOtp = async () => {
     await run(async () => {
-      if (await sendOtp(phoneNumber.trim())) setMode("otp");
+      if (await sendOtp(internationalPhone())) setMode("otp");
     });
   };
 
   const confirmLoginOtp = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     await run(async () => {
-      if (await verifyOtp(phoneNumber.trim(), otp)) {
-        navigate("/", { replace: true, state: { showWelcome: true } });
+      if (await verifyOtp(internationalPhone(), otp)) {
+        navigate(returnTo, { replace: true, state: { showWelcome: true } });
       }
     });
   };
 
   const sendResetOtp = async () => {
     await run(async () => {
-      const result = await requestPasswordReset(phoneNumber.trim());
+      const result = await requestPasswordReset(internationalPhone());
       if (result) {
         setDevelopmentOtp(result.developmentOtp ?? "");
         setResetDelivery(result.delivery ?? (result.developmentOtp ? "development" : "email"));
@@ -88,7 +98,7 @@ export function LoginPage() {
   const confirmResetOtp = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     await run(async () => {
-      const token = await verifyPasswordResetOtp(phoneNumber.trim(), otp);
+      const token = await verifyPasswordResetOtp(internationalPhone(), otp);
       if (token) {
         setResetToken(token);
         setDevelopmentOtp("");
@@ -146,6 +156,13 @@ export function LoginPage() {
   return (
     <main className="auth-screen">
       <form className="auth-card auth-login-card" onSubmit={submitHandler}>
+        {mode === "login" && (
+          <button type="button" className="auth-back" disabled={busy}
+            onClick={() => navigate(returnTo === "/cart" ? "/cart" : "/", { replace: true })}>
+            <ArrowLeft size={19} />
+            {returnTo === "/cart" ? "Back to cart" : "Back to products"}
+          </button>
+        )}
         {mode !== "login" && (
           <button
             type="button"
@@ -179,10 +196,10 @@ export function LoginPage() {
         </div>
 
         {(mode === "login" || mode === "otp" || mode === "forgot-phone" || mode === "forgot-otp") && (
-          <label className="auth-field">
+          <div className="auth-field">
             <span>Phone Number</span>
-            <span className="auth-input">
-              <Phone size={18} />
+            <span className="registration-phone-input">
+              <CountryCodePicker value={country} onChange={setCountry} disabled={busy || mode === "otp" || mode === "forgot-otp"} />
               <input
                 type="tel"
                 inputMode="tel"
@@ -194,7 +211,7 @@ export function LoginPage() {
                 required
               />
             </span>
-          </label>
+          </div>
         )}
 
         {mode === "login" && (
@@ -320,9 +337,10 @@ export function LoginPage() {
         )}
 
         {(mode === "login" || mode === "otp") && (
-          <p className="auth-switch">New to Renga Borong? <Link to="/signup">Create an account</Link></p>
+          <p className="auth-switch">New to Renga Borong? <Link to="/signup" state={{ returnTo }}>Create an account</Link></p>
         )}
       </form>
     </main>
   );
 }
+

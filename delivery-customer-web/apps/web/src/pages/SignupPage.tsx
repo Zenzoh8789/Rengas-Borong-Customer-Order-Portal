@@ -11,14 +11,21 @@ Phone,
 UserRound,
 } from "lucide-react";
 import { useRef,useState,type FormEvent,type ReactNode } from "react";
-import { Link,useNavigate } from "react-router-dom";
+import { Link,useNavigate,useLocation } from "react-router-dom";
 import { useApp } from "../context/AppContext";
+import { api } from "../services/api";
+import { BrandLogo } from "../components/BrandLogo";
+import { getCountryCallingCode, type CountryCode } from "libphonenumber-js";
+import { CountryCodePicker } from "../components/CountryCodePicker";
 
 export function SignupPage() {
   const pending = useRef(false);
   const [busy, setBusy] = useState(false);
   const { signUp } = useApp();
   const navigate = useNavigate();
+  const location = useLocation();
+  const requestedReturn = (location.state as { returnTo?: string } | null)?.returnTo;
+  const returnTo = ["/cart", "/orders", "/account"].includes(requestedReturn ?? "") ? requestedReturn! : "/";
   const [fullName, setFullName] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [whatsappNumber, setWhatsappNumber] = useState("");
@@ -32,6 +39,52 @@ export function SignupPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState("");
+  const [step, setStep] = useState<"phone" | "otp" | "details">("phone");
+  const [country, setCountry] = useState<CountryCode>("MY");
+  const [localPhone, setLocalPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [deliveryMessage, setDeliveryMessage] = useState("");
+  const [testOtp, setTestOtp] = useState("");
+  const [verificationToken, setVerificationToken] = useState("");
+
+  const requestCode = async () => {
+    const digits = localPhone.replace(/\D/g, "").replace(/^0+/, "");
+    const number = `+${getCountryCallingCode(country)}${digits}`;
+    if (!digits || number.length < 9 || number.length > 16) {
+      setError("Enter a valid phone number.");
+      return;
+    }
+    setPhoneNumber(number);
+    const result = await api.sendRegistrationOtp(number);
+    setVerificationToken("");
+    setDeliveryMessage(result.message);
+    setTestOtp(result.developmentOtp ?? "");
+    setOtp("");
+    setStep("otp");
+  };
+
+  const verifyPhone = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (pending.current) return;
+    pending.current = true;
+    setBusy(true);
+    setError("");
+    try {
+      if (step === "phone") await requestCode();
+      else {
+        const verified = await api.verifyRegistrationOtp(phoneNumber, otp);
+        setVerificationToken(verified.verificationToken);
+        setWhatsappNumber(phoneNumber);
+        setTestOtp("");
+        setStep("details");
+      }
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Unable to verify your phone. Please try again.");
+    } finally {
+      pending.current = false;
+      setBusy(false);
+    }
+  };
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -59,13 +112,57 @@ export function SignupPage() {
       tinNumber: tinNumber.trim(),
       address: address.trim(),
       password,
+      verificationToken,
     };
     pending.current = true; setBusy(true);
     try {
       const created = await signUp(profile);
-      if (created) navigate("/login", { state: { phoneNumber: phoneNumber.trim() } });
+      if (created) navigate("/login", { state: { phoneNumber: phoneNumber.trim(), returnTo } });
     } finally { pending.current = false; setBusy(false); }
   };
+
+  if (step !== "details") return (
+    <main className="auth-screen registration-phone-screen">
+      <form className="auth-card registration-phone-card" onSubmit={verifyPhone}>
+        <button type="button" className="registration-back" aria-label="Back" disabled={busy}
+          onClick={() => { if (step === "otp") { setStep("phone"); setError(""); setOtp(""); } else navigate("/login", { state: { returnTo } }); }}>
+          <ArrowLeft size={28} />
+        </button>
+        <div className="registration-brand">
+          <BrandLogo size={116} />
+          <p>Welcome to<br />RENGAS BORONG</p>
+        </div>
+        <h1>{step === "phone" ? "Register New Account" : "Verify Phone Number"}</h1>
+        <p className="registration-description">{step === "phone"
+          ? "To register a new account, we must first verify your phone number."
+          : `Enter the verification code for ${phoneNumber}.`}</p>
+        {step === "phone" ? <div className="registration-field">
+          <span>Phone Number</span>
+          <span className="registration-phone-input">
+            <CountryCodePicker value={country} disabled={busy} onChange={setCountry} />
+            <input aria-label="Phone Number" type="tel" inputMode="tel" autoComplete="tel-national" placeholder="12 3456 789"
+              value={localPhone} onChange={event => setLocalPhone(event.target.value)} disabled={busy} required />
+          </span>
+        </div> : <label className="registration-field">
+          <span>Verification Code</span>
+          <span className="registration-phone-input"><input aria-label="Verification Code" inputMode="numeric" autoComplete="one-time-code"
+            placeholder="6-digit code" pattern="[0-9]{6}" maxLength={6} value={otp}
+            onChange={event => setOtp(event.target.value.replace(/\D/g, ""))} disabled={busy} required /></span>
+        </label>}
+        {error && <p className="auth-error" role="alert">{error}</p>}
+        {step === "otp" && deliveryMessage && <p role="status">{deliveryMessage}</p>}
+        {step === "otp" && testOtp && <p role="status">Test code: <strong>{testOtp}</strong></p>}
+        <button className="registration-verify" type="submit" disabled={busy}>{busy ? "Please wait…" : step === "phone" ? "Verify" : "Confirm Code"}</button>
+        {step === "otp" && <button type="button" className="auth-link-button" disabled={busy} onClick={async () => {
+          if (pending.current) return;
+          pending.current = true; setBusy(true); setError("");
+          try { await requestCode(); } catch (cause) { setError(cause instanceof Error ? cause.message : "Unable to resend code."); }
+          finally { pending.current = false; setBusy(false); }
+        }}>Resend code</button>}
+        <p className="registration-signin">Already have an account? <Link to="/login" state={{ returnTo }}>Sign In</Link></p>
+      </form>
+    </main>
+  );
 
   return (
     <main className="auth-screen signup-screen">
@@ -74,6 +171,7 @@ export function SignupPage() {
           <Link
             className="signup-back"
             to="/login"
+            state={{ returnTo }}
             aria-label="Back to sign in"
           >
             <ArrowLeft size={21} />
@@ -111,6 +209,7 @@ export function SignupPage() {
           placeholder="Phone Number"
           type="tel"
           autoComplete="tel"
+          readOnly
         />
         <AuthInput
           icon={<Mail />}
@@ -190,7 +289,7 @@ export function SignupPage() {
           Sign Up
         </button>
         <p className="auth-switch">
-          Already have an account? <Link to="/login">Sign In</Link>
+          Already have an account? <Link to="/login" state={{ returnTo }}>Sign In</Link>
         </p>
       </form>
     </main>
@@ -204,6 +303,7 @@ type AuthInputProps = {
   placeholder: string;
   type?: string;
   autoComplete?: string;
+  readOnly?: boolean;
 };
 
 function AuthInput({
@@ -213,6 +313,7 @@ function AuthInput({
   placeholder,
   type = "text",
   autoComplete,
+  readOnly,
 }: AuthInputProps) {
   return (
     <label className="auth-input">
@@ -223,6 +324,7 @@ function AuthInput({
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         autoComplete={autoComplete}
+        readOnly={readOnly}
         required
       />
     </label>
@@ -278,3 +380,4 @@ function PasswordInput({
     </label>
   );
 }
+

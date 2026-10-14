@@ -22,7 +22,7 @@ const orderSignature = (items: RecentOrder[]) =>
     .join("|");
 
 export function HeaderStatus() {
-  const { profile } = useApp();
+  const { profile, authenticated } = useApp();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const dialog = useRef<HTMLDialogElement>(null);
@@ -79,12 +79,14 @@ export function HeaderStatus() {
   };
 
   useEffect(() => {
+    if (!authenticated) { setOrders([]); setLoaded(false); setHasUnread(false); return; }
     void load(false);
     const timer = window.setInterval(() => { if (!document.hidden && !dialog.current?.open) void load(false); }, 30_000);
     return () => { window.clearInterval(timer); requestId.current += 1; };
-  }, []);
+  }, [authenticated]);
 
   const open = () => {
+    if (!authenticated) { navigate("/login", { state: { returnTo: "/orders" } }); return; }
     setError("");
     dialog.current?.showModal();
     void load(!loaded, true);
@@ -108,7 +110,7 @@ export function HeaderStatus() {
         </span>
       </div>
 
-      <button
+      {authenticated ? <button
         type="button"
         className="icon-btn notification-btn"
         aria-label="Notifications"
@@ -117,7 +119,10 @@ export function HeaderStatus() {
       >
         <Bell />
         {hasUnread && <b aria-label="New notification" />}
-      </button>
+      </button> : <button type="button" className="header-login-btn"
+        onClick={() => navigate("/login", { state: { returnTo: pathname === "/cart" ? "/cart" : "/" } })}>
+        Login
+      </button>}
 
       <dialog
         ref={dialog}

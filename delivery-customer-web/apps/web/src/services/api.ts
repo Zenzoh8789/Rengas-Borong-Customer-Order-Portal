@@ -1,7 +1,7 @@
 import type { Order, Product } from "../types";
 
 const BASE = (
-  import.meta.env.VITE_API_URL || "http://localhost:3000/api"
+  import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "/api" : "http://localhost:3000/api")
 ).replace(/\/$/, "");
 
 const API_ORIGIN = new URL(BASE, window.location.origin).origin;
@@ -24,6 +24,7 @@ export type StoreCategory = {
 
 export type CustomerRegistration = Omit<CustomerProfile, "id"> & {
   password: string;
+  verificationToken?: string;
 };
 
 export function resolveApiAssetUrl(value?: string | null) {
@@ -166,6 +167,16 @@ export const api = {
       body: JSON.stringify({ phoneNumber }),
     }),
 
+  sendRegistrationOtp: (phoneNumber: string) =>
+    request<{ message: string; developmentOtp?: string; delivery: string }>("/auth/customer/registration/send-otp", {
+      method: "POST", body: JSON.stringify({ phoneNumber }),
+    }),
+
+  verifyRegistrationOtp: (phoneNumber: string, otp: string) =>
+    request<{ verificationToken: string }>("/auth/customer/registration/verify-otp", {
+      method: "POST", body: JSON.stringify({ phoneNumber, otp }),
+    }),
+
   requestCustomerPasswordReset: (phoneNumber: string) =>
     request<{
       message: string;
@@ -213,11 +224,11 @@ export const api = {
       ? productSnapshot.items
       : undefined,
 
-  products: (): Promise<Product[]> => {
+  products: (refresh = false): Promise<Product[]> => {
     const key = localStorage.getItem("rengas-token") || "";
 
     if (
-      !productsRequest ||
+      refresh || !productsRequest ||
       key !== productsKey ||
       Date.now() - productsLoadedAt > 60_000
     ) {

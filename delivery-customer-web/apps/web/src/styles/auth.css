@@ -386,3 +386,49 @@
 
 }
 
+
+
+/* Phone registration uses the same visual language as sign in. */
+.registration-phone-screen { background: #f4f5f7; color: #151928; scrollbar-gutter: auto; }
+.registration-phone-card { position: relative; }
+.registration-back { position: absolute; top: 28px; left: 24px; display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 10px; background: #f4f5f7; color: #697184; cursor: pointer; }
+.registration-brand { display: flex; flex-direction: column; align-items: center; padding-bottom: 28px; margin-bottom: 20px; border-bottom: 1px solid #eceef3; }
+.registration-brand img { display: block; object-fit: contain; }
+.registration-brand p { margin: 20px 0 0; text-align: center; font-size: 18px; font-weight: 700; line-height: 1.4; color: #101522; }
+.registration-phone-card h1 { margin: 0 0 10px; font-size: 20px; font-weight: 700; line-height: 1.4; }
+.registration-description { margin: 0 0 24px; color: #697184; font-size: 15px; line-height: 1.6; }
+.registration-field { display: flex; flex-direction: column; gap: 10px; font-size: 16px; font-weight: 600; color: #455166; }
+.registration-phone-input { display: flex; align-items: center; height: 58px; border: 1px solid #dce1eb; border-radius: 11px; overflow: hidden; background: #fff; box-shadow: 0 2px 5px #1b213c05; }
+.registration-phone-input:focus-within { outline: 2px solid #1429d2; outline-offset: 2px; }
+.registration-phone-input select { width: 104px; flex-shrink: 0; padding: 0 8px; border: 0; border-right: 1px solid #eceef3; background: transparent; color: #455166; font: inherit; font-size: 14px; height: 60%; }
+.registration-phone-input input { min-width: 0; width: 100%; height: 100%; padding: 0 14px; border: 0; background: transparent; outline: 0; color: #151928; font: inherit; font-size: 16px; font-weight: 400; }
+.registration-phone-input input::placeholder { color: #778298; }
+.registration-phone-card .registration-verify { width: 100%; min-height: 60px; margin: 24px 0 18px; border: 0; border-radius: 10px; background: linear-gradient(110deg, #0e1dcb, #2136cd); color: #fff; font: inherit; font-size: 16px; font-weight: 700; box-shadow: 0 9px 20px #1026bf30; cursor: pointer; }
+.registration-verify:disabled { opacity: .6; cursor: wait; }
+.registration-phone-card > .auth-link-button { min-height: 48px; border: 1px solid #1026bf; border-radius: 10px; color: #1026bf; font-weight: 600; }
+.registration-signin { margin: auto 0 0; padding-top: 50px; text-align: center; color: #697184; font-size: 15px; line-height: 1.5; }
+.registration-signin a { color: #1026bf; font-weight: 700; text-decoration: none; }
+@media (max-width: 380px) { .registration-back { left: 14px; } .registration-phone-input select { width: 104px; } }
+
+.auth-login-card, .registration-phone-card { min-height: min(720px, calc(100dvh - 14px)); }
+@media (min-width: 600px) { .auth-login-card, .registration-phone-card { min-height: min(720px, calc(100dvh - 32px)); } }
+
+
+
+.country-flag { display: block; width: 25px; height: 18px; flex-shrink: 0; border-radius: 3px; box-shadow: 0 0 0 1px #0001; }
+.registration-phone-input .country-code-trigger { display: flex; align-items: center; justify-content: center; gap: 6px; width: 104px; height: 60%; flex-shrink: 0; padding: 0 6px; border: 0; border-right: 1px solid #eceef3; border-radius: 0; background: transparent; color: #455166; white-space: nowrap; cursor: pointer; }
+.country-picker-dialog { width: min(420px, calc(100vw - 32px)); max-height: min(560px, calc(100dvh - 48px)); padding: 16px; border: 1px solid #dce1eb; border-radius: 18px; background: #fff; color: #151928; box-shadow: 0 16px 48px #1b213c30; }
+.country-picker-dialog::backdrop { background: #15192855; }
+.country-picker-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.country-picker-search { display: flex; align-items: center; gap: 10px; padding: 0 12px; border: 1px solid #dce1eb; border-radius: 10px; margin-bottom: 12px; }
+.country-picker-search input { min-width: 0; width: 100%; height: 44px; padding: 0; border: 0; outline: 0; background: transparent; color: inherit; }
+.country-picker-options { max-height: min(380px, calc(100dvh - 210px)); overflow-y: auto; overscroll-behavior: contain; }
+.country-picker-option { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 46px; padding: 10px; border: 0; border-radius: 8px; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.country-picker-option:hover, .country-picker-option:focus-visible { background: #f4f5ff; }
+.country-picker-option[aria-pressed="true"] { background: #eef0ff; color: #1026bf; }
+.country-calling-code { margin-left: auto; white-space: nowrap; color: #697184; }
+.country-picker-empty { padding: 16px 10px; }
+
+.auth-login-card > .auth-back + .auth-logo {
+  margin-top: 20px;
+}
